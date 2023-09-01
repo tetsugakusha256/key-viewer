@@ -1,12 +1,11 @@
 extern crate evdev;
 
 use evdev::*;
-use std::{
-    fs::File,
-    io::{self, Read, Write},
-};
+use std::io::{self, Read, Write};
+mod error_type;
+mod logger;
 
-fn main() -> Result<(), Errors> {
+fn main() -> Result<(), error_type::Errors> {
     let stdin = io::stdin();
     let stdout = io::stdout();
 
@@ -16,7 +15,8 @@ fn main() -> Result<(), Errors> {
     let mut event_buffer = [0u8; std::mem::size_of::<InputEvent>()];
     let mut buffer_offset = 0;
     let logger =
-        Logger::new("/home/anon/Documents/Code/RustLearning/key_capture/output.txt").unwrap();
+        logger::Logger::new("/home/anon/Documents/Code/RustLearning/key_capture/output.txt")
+            .unwrap();
 
     loop {
         let mut byte = [0u8; 1];
@@ -49,45 +49,14 @@ fn main() -> Result<(), Errors> {
     Ok(())
 }
 
-#[derive(Debug)]
-enum Errors {
-    ErrorReadingFile,
-    // Wrapped error from io::error
-    IOError(io::Error),
-}
-impl From<io::Error> for Errors {
-    fn from(e: io::Error) -> Self {
-        Errors::IOError(e)
-    }
-}
-struct Logger {
-    file: File,
-}
-impl Logger {
-    pub fn new(path: &str) -> Result<Logger, Errors> {
-        let file = match File::create(path) {
-            Ok(file) => file,
-            Err(err) => {
-                eprintln!("Error creating file: {}", err);
-                return Err(Errors::ErrorReadingFile);
-            }
-        };
-        return Ok(Logger { file });
-    }
-    pub fn write_in_file(&self, text: &str) -> Result<(), Errors> {
-        writeln!(&self.file, "{}", text)?;
-        Ok(())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     #[test]
     fn empty() {
-        assert_eq!(2,2);
+        assert_eq!(2, 2);
     }
     #[test]
     fn empty_input() {
-        assert_eq!(1,1);
+        assert_eq!(1, 1);
     }
 }
