@@ -1222,3 +1222,435 @@ G(d) clicked : 13
 G(d) w/ alt : 6
 End
 
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 14
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 14
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 15
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 15
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 16
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 16
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 17
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 17
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 18
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 18
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 19
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 19
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 20
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 20
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 21
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 21
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 1
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 34 	 Value :1
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 22
+G(d) w/ alt : 6
+End
+
+Code : 34	 Value : 0
+Keypressed array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Mod keys array :
+KeysPressed array :
+Row : 0	 Code : 0 	 Value :0
+Row : 1	 Code : 0 	 Value :0
+Row : 2	 Code : 0 	 Value :0
+Row : 3	 Code : 0 	 Value :0
+Row : 4	 Code : 0 	 Value :0
+End
+
+Alt clicked : 6
+G(d) clicked : 22
+G(d) w/ alt : 6
+End
+
