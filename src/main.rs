@@ -4,6 +4,7 @@ use evdev::*;
 use std::io::{self, Read, Write};
 mod error_type;
 mod logger;
+mod key_manager;
 
 fn main() -> Result<(), error_type::Errors> {
     let stdin = io::stdin();
@@ -14,7 +15,7 @@ fn main() -> Result<(), error_type::Errors> {
 
     let mut event_buffer = [0u8; std::mem::size_of::<InputEvent>()];
     let mut buffer_offset = 0;
-    let logger =
+    let mut logger =
         logger::Logger::new("/home/anon/Documents/Code/RustLearning/key_capture/output.txt")
             .unwrap();
 
@@ -29,9 +30,15 @@ fn main() -> Result<(), error_type::Errors> {
 
         if buffer_offset == std::mem::size_of::<InputEvent>() {
             let event: InputEvent = unsafe { std::mem::transmute(event_buffer) };
-            let _ = logger.write_in_file("test");
 
             if event.event_type() == EventType::KEY {
+                if event.code() == Key::KEY_G.code()
+                    || event.code() == Key::KEY_LEFTALT.code()
+                    || event.code() == Key::KEY_LEFTCTRL.code()
+                {
+                    logger.send_key(&event.code(), &event.value());
+                }
+
                 let new_event = InputEvent::new(EventType::KEY, event.code(), event.value());
                 let new_buffer: [u8; std::mem::size_of::<InputEvent>()] =
                     unsafe { std::mem::transmute(new_event) };

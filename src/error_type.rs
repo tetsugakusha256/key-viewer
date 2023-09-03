@@ -1,7 +1,6 @@
 use std::io;
 #[derive(Debug)]
 pub enum Errors {
-    ErrorReadingFile,
     // Wrapped error from io::error
     IOError(io::Error),
 }
