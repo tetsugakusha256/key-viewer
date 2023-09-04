@@ -1,4 +1,5 @@
-mod keystate_memory;
+pub mod keystate_memory;
+pub mod evdev_x11_tools;
 
 use self::keystate_memory::{KeystateMemory, LogKeyEvent};
 use std::{
@@ -58,12 +59,19 @@ impl KeysManager {
             Some(keystate_list)
         }
     }
+    // TODO:
+    // Get total clicks of a key with and without taking mod into account
+    
+    // TODO:
+    // Sort by number of clics
+    
     fn push_key_history(&mut self, key_code: &u16) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
             self.keys_history.pop_front();
         }
         self.keys_history.push_back(key_code.clone());
     }
+    /// Single key stats with the given mod_mask
     fn key_stats(&self, key_code: &u16, mod_mask: &u16) -> u32 {
         match self.keys_pressed_stats.get(key_code) {
             Some(mod_key_hashmap) => match mod_key_hashmap.get(mod_mask) {

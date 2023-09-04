@@ -32,7 +32,7 @@ fn main() -> Result<(), error_type::Errors> {
             let event: InputEvent = unsafe { std::mem::transmute(event_buffer) };
 
             if event.event_type() == EventType::KEY {
-                if event.code() == Key::KEY_INSERT.code()
+                if event.code() == Key::KEY_INSERT.code() 
                 {
                     let _ = logger.print_to_file();
                 }

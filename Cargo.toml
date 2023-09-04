@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 evdev = "0.12.1"
+xkbcommon = { version = "0.6", features = ["x11"] }
