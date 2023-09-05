@@ -45,6 +45,9 @@ impl KeysManager {
         // Update the statistics
         self.update_keycount_hashmap(&key_update_result);
     }
+    pub fn get_keys_pressed_stats(&self) -> &HashMap<u16, HashMap<u16, u32>>{
+        return &self.keys_pressed_stats;
+    }
     /// (key_code, number of clics, mod_mask)
     pub fn keystats_vec(&self) -> Option<Vec<(u16, u32, u16)>> {
         let mut keystate_list = Vec::new();
@@ -64,6 +67,7 @@ impl KeysManager {
     
     // TODO:
     // Sort by number of clics
+    
     
     fn push_key_history(&mut self, key_code: &u16) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
