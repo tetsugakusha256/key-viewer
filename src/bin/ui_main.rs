@@ -1,4 +1,3 @@
-use key_capture::ui_manager;
 use key_capture::ui_manager::app::{App,AppResult};
 use key_capture::ui_manager::event::{Event, EventHandler};
 use key_capture::ui_manager::handler::handle_key_events;

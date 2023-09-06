@@ -3,7 +3,7 @@ use tui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, Borders, Paragraph, Tabs},
+    widgets::{Block, Borders, Paragraph, Scrollbar, ScrollbarOrientation, Tabs},
     Frame,
 };
 
@@ -15,6 +15,7 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     // See the following resources:
     // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
     // - https://github.com/ratatui-org/ratatui/tree/master/examples
+    let text = app.logger_string();
     let size = frame.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -38,6 +39,8 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
                 .bg(Color::Black),
         );
     frame.render_widget(tabs, chunks[0]);
+    app.vertical_scroll_state = app.vertical_scroll_state.content_length(text.len() as u16);
+    // app.horizontal_scroll_state = app.horizontal_scroll_state.content_length(long_line.len());
     let create_block = |title| {
         Block::default()
             .borders(Borders::ALL)
@@ -47,12 +50,24 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
                 Style::default().add_modifier(Modifier::BOLD),
             ))
     };
-    let paragraph = Paragraph::new(app.logger_string())
+    let paragraph = Paragraph::new(text)
         .style(Style::default().fg(Color::Gray))
-        .block(create_block("Default alignment (Left), no wrap"));
+        .block(create_block("Default alignment (Left), no wrap"))
+        .scroll((app.vertical_scroll as u16, 0));
     let inner = match app.index {
         0 => paragraph,
+        1 => paragraph,
+        2 => paragraph,
+        3 => paragraph,
         _ => unreachable!(),
     };
     frame.render_widget(inner, chunks[1]);
+    frame.render_stateful_widget(
+        Scrollbar::default()
+            .orientation(ScrollbarOrientation::VerticalRight)
+            .begin_symbol(Some("↑"))
+            .end_symbol(Some("↓")),
+        chunks[1],
+        &mut app.vertical_scroll_state,
+    );
 }

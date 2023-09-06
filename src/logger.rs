@@ -6,7 +6,7 @@ use crate::{
 use std::{
     collections::HashMap,
     fs::File,
-    io::{BufReader, Read, Write},
+    io::{Read, Write},
 };
 
 /// Owns a keysmanager and a converter and manage the logging

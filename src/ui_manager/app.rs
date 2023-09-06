@@ -1,6 +1,7 @@
-use crate::logger::{Logger};
-use std::error;
+use tui::widgets::ScrollbarState;
 
+use crate::logger::Logger;
+use std::error;
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
 
@@ -13,18 +14,27 @@ pub struct App<'a> {
     /// current tab
     pub index: usize,
     logger: Logger,
+    pub vertical_scroll_state: ScrollbarState,
+    pub horizontal_scroll_state: ScrollbarState,
+    pub vertical_scroll: u16,
+    pub horizontal_scroll: u16,
 }
 
 impl<'a> Default for App<'a> {
     fn default() -> Self {
-        let  logger = Logger::new_from_file(
+        let logger = Logger::new_from_file(
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
-        ).unwrap();
+        )
+        .unwrap();
         Self {
             titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
             logger,
+            vertical_scroll:0,
+            horizontal_scroll:0,
+            vertical_scroll_state: ScrollbarState::default(),
+            horizontal_scroll_state: ScrollbarState::default(),
         }
     }
 }
