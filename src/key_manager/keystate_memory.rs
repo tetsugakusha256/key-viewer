@@ -40,7 +40,8 @@ impl KeystateMemory {
     // TODO: manage different max keys
     pub fn new() -> KeystateMemory {
         let mut my_array: [(EvdevKeyCode, i32); MAX_KEYS] = [(EvdevKeyCode(0), 0); MAX_KEYS]; // Initialize with default values
-        let mut my_mod_array: [(EvdevKeyCode, i32); MAX_MOD_KEYS] = [(EvdevKeyCode(0), 0); MAX_MOD_KEYS]; // Initialize with default values
+        let mut my_mod_array: [(EvdevKeyCode, i32); MAX_MOD_KEYS] =
+            [(EvdevKeyCode(0), 0); MAX_MOD_KEYS]; // Initialize with default values
         for i in 0..MAX_KEYS {
             my_array[i] = (EvdevKeyCode(0), 0);
         }
@@ -75,7 +76,11 @@ impl KeystateMemory {
         EvdevModMask(mask)
     }
     /// Update the state with the new key event
-    pub fn receive_keyevent(&mut self, key_code: &EvdevKeyCode, key_value: &i32) -> Option<LogKeyEvent> {
+    pub fn receive_keyevent(
+        &mut self,
+        key_code: &EvdevKeyCode,
+        key_value: &i32,
+    ) -> Option<LogKeyEvent> {
         // Update the arrays
         let key_update_result = if KeystateMemory::is_mod_key(key_code) {
             KeystateMemory::update_keystate(&mut self.pressed_mod_keys, &key_code, &key_value)
@@ -96,6 +101,7 @@ impl KeystateMemory {
             KEY_RIGHTCTRL => 128,
             _ => 0,
         })
+        // layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96
     }
     fn update_keystate(
         key_list: &mut KeysList,
@@ -157,51 +163,22 @@ impl KeystateMemory {
         return None;
     }
 }
-pub fn mod_mask_to_string(mod_mask: &EvdevModMask) -> String {
-    let mut text = String::from("");
-    let mod_mask = mod_mask.0;
-    if (mod_mask >> 0 & 1) == 1 {
-        text = text + "Alt_l, ";
-    }
-    if (mod_mask >> 1 & 1) == 1 {
-        text = text + "Shift_l, ";
-    }
-    if (mod_mask >> 2 & 1) == 1 {
-        text = text + "Meta_l, ";
-    }
-    if (mod_mask >> 3 & 1) == 1 {
-        text = text + "Ctrl_l, ";
-    }
-    if (mod_mask >> 4 & 1) == 1 {
-        text = text + "ISO_3, ";
-    }
-    if (mod_mask >> 5 & 1) == 1 {
-        text = text + "ISO_5, ";
-    }
-    if (mod_mask >> 6 & 1) == 1 {
-        text = text + "Shift_r, ";
-    }
-    if (mod_mask >> 7 & 1) == 1 {
-        text = text + "Ctrl_r, ";
-    }
-    text
-}
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
     fn mask_to_mod() {
         let keystate_mem = KeystateMemory::new();
-        let a = mod_mask_to_string(&EvdevModMask(0));
-        let b = mod_mask_to_string(&EvdevModMask(1));
-        let c = mod_mask_to_string(&EvdevModMask(3));
-        let d = mod_mask_to_string(&EvdevModMask(7));
+        let a = &EvdevModMask(0);
+        let b = &EvdevModMask(1);
+        let c = &EvdevModMask(3);
+        let d = &EvdevModMask(7);
         //TODO: use contain
-        assert_eq!(a, "".to_string());
-        assert_eq!(b, "Alt_l, ".to_string());
-        assert_eq!(c, "Alt_l, Shift_l, ".to_string());
-        assert!(d.contains("Alt_l"));
-        assert!(d.contains("Shift_l"));
-        assert!(d.contains("Meta_l"));
+        assert_eq!(a.to_string(), "".to_string());
+        assert_eq!(b.to_string(), "Alt_l, ".to_string());
+        assert_eq!(c.to_string(), "Alt_l, Shift_l, ".to_string());
+        assert!(d.to_string().contains("Alt_l"));
+        assert!(d.to_string().contains("Shift_l"));
+        assert!(d.to_string().contains("Meta_l"));
     }
 }

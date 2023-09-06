@@ -1,8 +1,10 @@
+use crate::key_manager::EvdevKeyCode;
 use xkbcommon::xkb;
 use xkbcommon::xkb::Context;
 use xkbcommon::xkb::Keymap;
 use xkbcommon::xkb::KEYMAP_COMPILE_NO_FLAGS;
-use crate::key_manager::EvdevKeyCode;
+
+use super::key_types::EvdevModMask;
 
 pub struct EvdevX11Converter {
     keymap: Keymap,
@@ -22,12 +24,25 @@ impl EvdevX11Converter {
             .unwrap(),
         }
     }
-    fn mod_mask_to_layer(mod_mask:&u16) -> u32{
-        *mod_mask as u32
+
+    /// Return the x11 layer based on the EvdevModMask or 0
+    fn mod_mask_to_layer(mod_mask: &EvdevModMask) -> u32 {
+        let mod_mask = mod_mask.0;
+        // Check the mod_mask for (shift, altgr ...)
+        // layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96
+        match mod_mask {
+            0 => 0,
+            2 | 64 => 1,
+            16 => 2,
+            18 | 80 => 3,
+            32 => 4,
+            34 | 96 => 5,
+            _ => 0,
+        }
     }
     /// given an evdev keycode and a custom mod_mask
     /// return sym char or keyname if no sym char found
-    pub fn convert_keycode(&self, keycode: &EvdevKeyCode, mod_mask:&u16) -> String {
+    pub fn get_x11_char(&self, keycode: &EvdevKeyCode, mod_mask: &EvdevModMask) -> String {
         let layer = EvdevX11Converter::mod_mask_to_layer(mod_mask);
         let x11_keycode = xkb::Keycode::new(keycode.0 as u32 + 8);
         let keysym = self.keymap.key_get_syms_by_level(x11_keycode, 0, layer);

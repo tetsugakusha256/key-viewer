@@ -1,9 +1,9 @@
 pub mod evdev_x11_tools;
-pub mod keystate_memory;
 pub mod key_types;
+pub mod keystate_memory;
 
-use self::keystate_memory::{KeystateMemory, LogKeyEvent};
 use self::key_types::{EvdevKeyCode, EvdevModMask};
+use self::keystate_memory::{KeystateMemory, LogKeyEvent};
 use std::{
     collections::{HashMap, VecDeque},
     fmt,
@@ -22,7 +22,7 @@ pub struct KeysManager {
 }
 impl fmt::Display for KeysManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let formatted_string = format!("{:#?}", &self.keystats_vec());
+        let formatted_string = format!("{:#?}", &self.all_keys_stats_vec());
         writeln!(f, "Stats: {}", formatted_string)
     }
 }
@@ -52,7 +52,7 @@ impl KeysManager {
         self.keys_pressed_stats = new_keys_pressed_stats;
     }
     /// (key_code, number of clics, mod_mask)
-    pub fn keystats_vec(&self) -> Option<Vec<(EvdevKeyCode, u32, EvdevModMask)>> {
+    pub fn all_keys_stats_vec(&self) -> Option<Vec<(EvdevKeyCode, u32, EvdevModMask)>> {
         let mut keystate_list = Vec::new();
         for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
             for (mod_mask, clicks) in mod_key_hashmap.iter() {
@@ -65,11 +65,32 @@ impl KeysManager {
             Some(keystate_list)
         }
     }
-    // TODO:
-    // Get total clicks of a key with and without taking mod into account
+    /// Get number of clicks of a key with a specific mod on (or no mod)
+    pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        for (_key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+            if key_code == _key_code {
+                for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                    if mod_mask == _mod_mask {
+                        return *clicks;
+                    }
+                }
+            }
+        }
+        0
+    }
 
-    // TODO:
-    // Sort by number of clics
+    /// map of all keys with clicks for a given mod_mask
+    pub fn hashmap_mod_keys(&self, mod_mask:&EvdevModMask) -> HashMap<EvdevKeyCode,u32> {
+        let mut hashmap = HashMap::<EvdevKeyCode,u32>::new();
+        for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+                for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                    if mod_mask == _mod_mask {
+                        hashmap.insert(*key_code, *clicks);
+                    }
+                }
+        }
+        hashmap
+    }
 
     fn push_key_history(&mut self, key_code: &EvdevKeyCode) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
@@ -87,6 +108,7 @@ impl KeysManager {
             None => 0,
         }
     }
+
     fn update_keycount_hashmap(&mut self, key_update_result: &Option<LogKeyEvent>) {
         match key_update_result {
             Some(x) => match x {

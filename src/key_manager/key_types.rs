@@ -47,6 +47,32 @@ impl Into<u16> for EvdevModMask {
 }
 impl fmt::Display for EvdevModMask {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}", self.0)
+    let mut text = String::from("");
+    let mod_mask = self.0;
+    if (mod_mask >> 0 & 1) == 1 {
+        text = text + "Alt_l, ";
+    }
+    if (mod_mask >> 1 & 1) == 1 {
+        text = text + "Shift_l, ";
+    }
+    if (mod_mask >> 2 & 1) == 1 {
+        text = text + "Meta_l, ";
+    }
+    if (mod_mask >> 3 & 1) == 1 {
+        text = text + "Ctrl_l, ";
+    }
+    if (mod_mask >> 4 & 1) == 1 {
+        text = text + "ISO_3, ";
+    }
+    if (mod_mask >> 5 & 1) == 1 {
+        text = text + "ISO_5, ";
+    }
+    if (mod_mask >> 6 & 1) == 1 {
+        text = text + "Shift_r, ";
+    }
+    if (mod_mask >> 7 & 1) == 1 {
+        text = text + "Ctrl_r, ";
+    }
+        writeln!(f, "{}", text)
     }
 }

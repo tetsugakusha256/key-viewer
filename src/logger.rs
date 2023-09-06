@@ -1,7 +1,9 @@
 use crate::{
     error_type::Errors,
-    key_manager::{keystate_memory::mod_mask_to_string, key_types::{EvdevKeyCode, EvdevModMask}},
     key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
+    key_manager::{
+        key_types::{EvdevKeyCode, EvdevModMask},
+    },
 };
 use std::{
     collections::HashMap,
@@ -57,16 +59,32 @@ impl Logger {
     // Need another function that get all key on layout and retrieve the clicks
     pub fn nice_string(&self) -> String {
         let mut text = String::from("");
-        if let Some(keystats_vec) = self.keys_manager.keystats_vec() {
+        if let Some(keystats_vec) = self.keys_manager.all_keys_stats_vec() {
             for (code, clicks, map) in keystats_vec {
-                text = text + mod_mask_to_string(&map).as_str();
+                text = text + &map.to_string();
                 text = text
-                    + self.evdev_converter.convert_keycode(&code, &0).as_str()
+                    + self.evdev_converter.get_x11_char(&code, &map).as_str()
                     + "\t clicked : "
                     + clicks.to_string().as_str()
                     + "\n";
             }
         }
+        text
+    }
+
+    /// String of all keys clicked on a given mod_mask
+    pub fn nice_string_mask(&self, mod_mask: &EvdevModMask) -> String {
+        let mut text = String::from("");
+        text += &mod_mask.to_string();
+        let keystats_vec = self.keys_manager.hashmap_mod_keys(mod_mask);
+        for (code, clicks) in keystats_vec {
+            text = text
+                + self.evdev_converter.get_x11_char(&code, &mod_mask).as_str()
+                + "\t clicked : "
+                + clicks.to_string().as_str()
+                + "\n";
+        }
+
         text
     }
     /// Save data to disk
@@ -76,10 +94,13 @@ impl Logger {
         Ok(())
     }
     /// Load data from disk
-    fn load_from_disk(file: &mut File) -> Result<HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>, Errors> {
+    fn load_from_disk(
+        file: &mut File,
+    ) -> Result<HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>, Errors> {
         let mut content = String::new();
         file.read_to_string(&mut content)?;
-        let deserialized: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> = serde_json::from_str(&content)?;
+        let deserialized: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> =
+            serde_json::from_str(&content)?;
         Ok(deserialized)
     }
 

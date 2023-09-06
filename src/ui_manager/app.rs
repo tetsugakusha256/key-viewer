@@ -14,6 +14,7 @@ pub struct App<'a> {
     /// current tab
     pub index: usize,
     logger: Logger,
+    keys_text: String,
     pub vertical_scroll_state: ScrollbarState,
     pub horizontal_scroll_state: ScrollbarState,
     pub vertical_scroll: u16,
@@ -26,13 +27,16 @@ impl<'a> Default for App<'a> {
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
         )
         .unwrap();
+
+        let text = logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(0));
         Self {
             titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
             logger,
-            vertical_scroll:0,
-            horizontal_scroll:0,
+            keys_text: text,
+            vertical_scroll: 0,
+            horizontal_scroll: 0,
             vertical_scroll_state: ScrollbarState::default(),
             horizontal_scroll_state: ScrollbarState::default(),
         }
@@ -45,7 +49,7 @@ impl<'a> App<'a> {
         Self::default()
     }
     pub fn logger_string(&self) -> String {
-        self.logger.nice_string()
+        self.keys_text.to_string()
     }
 
     /// Handles the tick event of the terminal.
