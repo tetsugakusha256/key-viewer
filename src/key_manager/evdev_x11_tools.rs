@@ -2,6 +2,7 @@ use xkbcommon::xkb;
 use xkbcommon::xkb::Context;
 use xkbcommon::xkb::Keymap;
 use xkbcommon::xkb::KEYMAP_COMPILE_NO_FLAGS;
+use crate::key_manager::EvdevKeyCode;
 
 pub struct EvdevX11Converter {
     keymap: Keymap,
@@ -26,9 +27,9 @@ impl EvdevX11Converter {
     }
     /// given an evdev keycode and a custom mod_mask
     /// return sym char or keyname if no sym char found
-    pub fn convert_keycode(&self, keycode: &u16, mod_mask:&u16) -> String {
+    pub fn convert_keycode(&self, keycode: &EvdevKeyCode, mod_mask:&u16) -> String {
         let layer = EvdevX11Converter::mod_mask_to_layer(mod_mask);
-        let x11_keycode = xkb::Keycode::new(*keycode as u32 + 8);
+        let x11_keycode = xkb::Keycode::new(keycode.0 as u32 + 8);
         let keysym = self.keymap.key_get_syms_by_level(x11_keycode, 0, layer);
         let keyname = self.keymap.key_get_name(x11_keycode);
         let mut text = String::new();

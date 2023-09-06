@@ -1,27 +1,18 @@
 use std::fmt;
 
-use evdev::Key;
+use super::key_types::*;
 
 const MAX_KEYS: usize = 5;
 const MAX_MOD_KEYS: usize = 5;
-// modkeys : shift_l 50 shift_r 62 ctrl_l 37 ctr_r 105 Superl 133 alt_l 64 iso3 108 iso5 107
-const KEY_LEFTALT: u16 = Key::KEY_LEFTALT.code();
-const KEY_LEFTCTRL: u16 = Key::KEY_LEFTCTRL.code();
-const KEY_LEFTMETA: u16 = Key::KEY_LEFTMETA.code();
-const KEY_LEFTSHIFT: u16 = Key::KEY_LEFTSHIFT.code();
-const KEY_ISO3: u16 = Key::KEY_RIGHTALT.code();
-const KEY_RIGHTCTRL: u16 = Key::KEY_RIGHTCTRL.code();
-const KEY_ISO5: u16 = Key::KEY_PRINT.code();
-const KEY_RIGHTSHIFT: u16 = Key::KEY_RIGHTSHIFT.code();
 #[allow(dead_code)]
 pub enum LogKeyEvent {
-    KeyPressed(u16),
-    KeyReleased(u16),
-    KeyHold(u16),
-    KeyStayHold(u16),
+    KeyPressed(EvdevKeyCode),
+    KeyReleased(EvdevKeyCode),
+    KeyHold(EvdevKeyCode),
+    KeyStayHold(EvdevKeyCode),
 }
 #[derive(Debug)]
-struct KeysList([(u16, i32); MAX_KEYS]);
+struct KeysList([(EvdevKeyCode, i32); MAX_KEYS]);
 impl fmt::Display for KeysList {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "KeysPressed array :")?;
@@ -32,10 +23,10 @@ impl fmt::Display for KeysList {
     }
 }
 impl KeysList {
-    fn iter(&self) -> std::slice::Iter<(u16, i32)> {
+    fn iter(&self) -> std::slice::Iter<(EvdevKeyCode, i32)> {
         self.0.iter()
     }
-    fn iter_mut(&mut self) -> std::slice::IterMut<(u16, i32)> {
+    fn iter_mut(&mut self) -> std::slice::IterMut<(EvdevKeyCode, i32)> {
         self.0.iter_mut()
     }
 }
@@ -48,13 +39,13 @@ pub struct KeystateMemory {
 impl KeystateMemory {
     // TODO: manage different max keys
     pub fn new() -> KeystateMemory {
-        let mut my_array: [(u16, i32); MAX_KEYS] = [(0, 0); MAX_KEYS]; // Initialize with default values
-        let mut my_mod_array: [(u16, i32); MAX_MOD_KEYS] = [(0, 0); MAX_MOD_KEYS]; // Initialize with default values
+        let mut my_array: [(EvdevKeyCode, i32); MAX_KEYS] = [(EvdevKeyCode(0), 0); MAX_KEYS]; // Initialize with default values
+        let mut my_mod_array: [(EvdevKeyCode, i32); MAX_MOD_KEYS] = [(EvdevKeyCode(0), 0); MAX_MOD_KEYS]; // Initialize with default values
         for i in 0..MAX_KEYS {
-            my_array[i] = (0, 0);
+            my_array[i] = (EvdevKeyCode(0), 0);
         }
         for i in 0..MAX_MOD_KEYS {
-            my_mod_array[i] = (0, 0);
+            my_mod_array[i] = (EvdevKeyCode(0), 0);
         }
         return KeystateMemory {
             pressed_keys: (KeysList(my_array)),
@@ -64,27 +55,27 @@ impl KeystateMemory {
     pub fn get_current_keys_pressed() {}
     pub fn clear(&mut self) {
         for e in self.pressed_keys.iter_mut() {
-            *e = (0u16, 0i32);
+            *e = (EvdevKeyCode(0), 0i32);
         }
     }
-    fn is_mod_key(key_code: &u16) -> bool {
+    fn is_mod_key(key_code: &EvdevKeyCode) -> bool {
         match *key_code {
             KEY_LEFTALT | KEY_LEFTCTRL | KEY_LEFTMETA | KEY_LEFTSHIFT | KEY_ISO3
             | KEY_RIGHTCTRL | KEY_ISO5 | KEY_RIGHTSHIFT => true,
             _ => false,
         }
     }
-    pub fn get_mod_keys_mask(&self) -> u16 {
+    pub fn get_mod_keys_mask(&self) -> EvdevModMask {
         let mut mask = 0;
         for (code, value) in self.pressed_mod_keys.iter() {
-            if *value != 0 && *code != 0 {
-                mask += KeystateMemory::mod_to_mod_mask(code)
+            if *value != 0 && *code != EvdevKeyCode(0) {
+                mask += KeystateMemory::mod_to_mod_mask(code).0
             }
         }
-        mask
+        EvdevModMask(mask)
     }
     /// Update the state with the new key event
-    pub fn receive_keyevent(&mut self, key_code: &u16, key_value: &i32) -> Option<LogKeyEvent> {
+    pub fn receive_keyevent(&mut self, key_code: &EvdevKeyCode, key_value: &i32) -> Option<LogKeyEvent> {
         // Update the arrays
         let key_update_result = if KeystateMemory::is_mod_key(key_code) {
             KeystateMemory::update_keystate(&mut self.pressed_mod_keys, &key_code, &key_value)
@@ -93,8 +84,8 @@ impl KeystateMemory {
         };
         key_update_result
     }
-    fn mod_to_mod_mask(mod_key: &u16) -> u16 {
-        match *mod_key {
+    fn mod_to_mod_mask(mod_key: &EvdevKeyCode) -> EvdevModMask {
+        EvdevModMask::from(match *mod_key {
             KEY_LEFTALT => 1,
             KEY_LEFTSHIFT => 2,
             KEY_LEFTMETA => 4,
@@ -104,11 +95,11 @@ impl KeystateMemory {
             KEY_RIGHTSHIFT => 64,
             KEY_RIGHTCTRL => 128,
             _ => 0,
-        }
+        })
     }
     fn update_keystate(
         key_list: &mut KeysList,
-        key_code: &u16,
+        key_code: &EvdevKeyCode,
         key_value: &i32,
     ) -> Option<LogKeyEvent> {
         match key_value {
@@ -130,12 +121,12 @@ impl KeystateMemory {
         }
         fn inner_update_keystate(
             key_value: &mut i32,
-            key_code: &mut u16,
-            new_key_code: &u16,
+            key_code: &mut EvdevKeyCode,
+            new_key_code: &EvdevKeyCode,
             new_key_value: &i32,
         ) -> Option<LogKeyEvent> {
             let new_key_code = if *new_key_value == 0 {
-                0
+                EvdevKeyCode(0)
             } else {
                 *new_key_code
             };
@@ -166,8 +157,9 @@ impl KeystateMemory {
         return None;
     }
 }
-pub fn mod_mask_to_string(mod_mask: &u16) -> String {
+pub fn mod_mask_to_string(mod_mask: &EvdevModMask) -> String {
     let mut text = String::from("");
+    let mod_mask = mod_mask.0;
     if (mod_mask >> 0 & 1) == 1 {
         text = text + "Alt_l, ";
     }
@@ -200,10 +192,10 @@ mod tests {
     #[test]
     fn mask_to_mod() {
         let keystate_mem = KeystateMemory::new();
-        let a = mod_mask_to_string(&0);
-        let b = mod_mask_to_string(&1);
-        let c = mod_mask_to_string(&3);
-        let d = mod_mask_to_string(&7);
+        let a = mod_mask_to_string(&EvdevModMask(0));
+        let b = mod_mask_to_string(&EvdevModMask(1));
+        let c = mod_mask_to_string(&EvdevModMask(3));
+        let d = mod_mask_to_string(&EvdevModMask(7));
         //TODO: use contain
         assert_eq!(a, "".to_string());
         assert_eq!(b, "Alt_l, ".to_string());

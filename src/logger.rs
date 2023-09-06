@@ -1,6 +1,6 @@
 use crate::{
     error_type::Errors,
-    key_manager::keystate_memory::mod_mask_to_string,
+    key_manager::{keystate_memory::mod_mask_to_string, key_types::{EvdevKeyCode, EvdevModMask}},
     key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
 };
 use std::{
@@ -13,8 +13,8 @@ use std::{
 #[allow(dead_code)]
 pub struct Logger {
     file: File,
-    keys_manager: KeysManager,
     path: String,
+    keys_manager: KeysManager,
     evdev_converter: EvdevX11Converter,
 }
 #[allow(dead_code)]
@@ -42,7 +42,7 @@ impl Logger {
             evdev_converter: EvdevX11Converter::new("cuco"),
         })
     }
-    pub fn send_key(&mut self, code: &u16, value: &i32) -> () {
+    pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
         self.keys_manager.receive_keyevent(&code, &value);
     }
     pub fn print_to_file(&mut self) -> Result<(), Errors> {
@@ -76,10 +76,10 @@ impl Logger {
         Ok(())
     }
     /// Load data from disk
-    fn load_from_disk(file: &mut File) -> Result<HashMap<u16, HashMap<u16, u32>>, Errors> {
+    fn load_from_disk(file: &mut File) -> Result<HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>, Errors> {
         let mut content = String::new();
         file.read_to_string(&mut content)?;
-        let deserialized: HashMap<u16, HashMap<u16, u32>> = serde_json::from_str(&content)?;
+        let deserialized: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> = serde_json::from_str(&content)?;
         Ok(deserialized)
     }
 

@@ -2,7 +2,7 @@ extern crate evdev;
 
 use evdev::*;
 use std::io::{self, Read, Write};
-use key_capture::{logger, error_type};
+use key_capture::{logger, error_type, key_manager::key_types::EvdevKeyCode};
 
 fn main() -> Result<(), error_type::Errors> {
     let stdin = io::stdin();
@@ -34,7 +34,7 @@ fn main() -> Result<(), error_type::Errors> {
                 if event.code() == Key::KEY_INSERT.code() {
                     let _ = logger.print_to_file();
                 }
-                logger.send_key(&event.code(), &event.value());
+                logger.send_key(&EvdevKeyCode(event.code()), &event.value());
 
                 let new_event = InputEvent::new(EventType::KEY, event.code(), event.value());
                 let new_buffer: [u8; std::mem::size_of::<InputEvent>()] =
