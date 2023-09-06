@@ -20,6 +20,7 @@ pub enum LogKeyEvent {
     KeyHold(u16),
     KeyStayHold(u16),
 }
+#[derive(Debug)]
 struct KeysList([(u16, i32); MAX_KEYS]);
 impl fmt::Display for KeysList {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -38,6 +39,7 @@ impl KeysList {
         self.0.iter_mut()
     }
 }
+#[derive(Debug)]
 pub struct KeystateMemory {
     pressed_keys: KeysList,
     pressed_mod_keys: KeysList,

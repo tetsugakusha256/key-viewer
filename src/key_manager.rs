@@ -1,5 +1,5 @@
-pub mod keystate_memory;
 pub mod evdev_x11_tools;
+pub mod keystate_memory;
 
 use self::keystate_memory::{KeystateMemory, LogKeyEvent};
 use std::{
@@ -17,6 +17,7 @@ struct ModMask(u16);
 const MAX_KEYS_CHAIN: usize = 4;
 
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct KeysManager {
     current_keys: KeystateMemory,
     /// <key_code,(mode_bitmask,count)>
@@ -25,7 +26,7 @@ pub struct KeysManager {
 }
 impl fmt::Display for KeysManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let formatted_string = format!("{:#?}", &self.keystats_vec() );
+        let formatted_string = format!("{:#?}", &self.keystats_vec());
         writeln!(f, "Stats: {}", formatted_string)
     }
 }
@@ -45,8 +46,14 @@ impl KeysManager {
         // Update the statistics
         self.update_keycount_hashmap(&key_update_result);
     }
-    pub fn get_keys_pressed_stats(&self) -> &HashMap<u16, HashMap<u16, u32>>{
+    pub fn get_keys_pressed_stats(&self) -> &HashMap<u16, HashMap<u16, u32>> {
         return &self.keys_pressed_stats;
+    }
+    pub fn set_keys_pressed_stats(
+        &mut self,
+        new_keys_pressed_stats: HashMap<u16, HashMap<u16, u32>>,
+    ) -> () {
+        self.keys_pressed_stats = new_keys_pressed_stats;
     }
     /// (key_code, number of clics, mod_mask)
     pub fn keystats_vec(&self) -> Option<Vec<(u16, u32, u16)>> {
@@ -64,11 +71,10 @@ impl KeysManager {
     }
     // TODO:
     // Get total clicks of a key with and without taking mod into account
-    
+
     // TODO:
     // Sort by number of clics
-    
-    
+
     fn push_key_history(&mut self, key_code: &u16) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
             self.keys_history.pop_front();

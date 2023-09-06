@@ -1,10 +1,10 @@
+use crate::logger::{Logger};
 use std::error;
 
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
 
 /// Application.
-#[derive(Debug)]
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
@@ -12,14 +12,19 @@ pub struct App<'a> {
     pub titles: Vec<&'a str>,
     /// current tab
     pub index: usize,
+    logger: Logger,
 }
 
 impl<'a> Default for App<'a> {
     fn default() -> Self {
+        let  logger = Logger::new_from_file(
+            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+        ).unwrap();
         Self {
             titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
+            logger,
         }
     }
 }
@@ -28,6 +33,9 @@ impl<'a> App<'a> {
     /// Constructs a new instance of [`App`].
     pub fn new() -> Self {
         Self::default()
+    }
+    pub fn logger_string(&self) -> String {
+        self.logger.nice_string()
     }
 
     /// Handles the tick event of the terminal.

@@ -1,10 +1,9 @@
-use crossterm::style::Stylize;
 use tui::{
     backend::Backend,
-    layout::{Alignment, Constraint, Direction, Layout},
+    layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
-    text::Line,
-    widgets::{Block, BorderType, Borders, Paragraph, Tabs},
+    text::{Line, Span},
+    widgets::{Block, Borders, Paragraph, Tabs},
     Frame,
 };
 
@@ -27,9 +26,7 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     let titles = app
         .titles
         .iter()
-        .map(|t| {
-            Line::from(t.to_string())
-        })
+        .map(|t| Line::from(t.to_string()))
         .collect();
     let tabs = Tabs::new(titles)
         .block(Block::default().borders(Borders::ALL).title("Tabs"))
@@ -41,11 +38,20 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
                 .bg(Color::Black),
         );
     frame.render_widget(tabs, chunks[0]);
+    let create_block = |title| {
+        Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::Gray))
+            .title(Span::styled(
+                title,
+                Style::default().add_modifier(Modifier::BOLD),
+            ))
+    };
+    let paragraph = Paragraph::new(app.logger_string())
+        .style(Style::default().fg(Color::Gray))
+        .block(create_block("Default alignment (Left), no wrap"));
     let inner = match app.index {
-        0 => Block::default().title("Inner 0").borders(Borders::ALL),
-        1 => Block::default().title("Inner 1").borders(Borders::ALL),
-        2 => Block::default().title("Inner 2").borders(Borders::ALL),
-        3 => Block::default().title("Inner 3").borders(Borders::ALL),
+        0 => paragraph,
         _ => unreachable!(),
     };
     frame.render_widget(inner, chunks[1]);

@@ -3,7 +3,11 @@ use crate::{
     key_manager::keystate_memory::mod_mask_to_string,
     key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
 };
-use std::{fs::File, io::Write, collections::HashMap};
+use std::{
+    collections::HashMap,
+    fs::File,
+    io::{BufReader, Read, Write},
+};
 
 /// Owns a keysmanager and a converter and manage the logging
 #[allow(dead_code)]
@@ -25,14 +29,26 @@ impl Logger {
             evdev_converter: EvdevX11Converter::new("cuco"),
         })
     }
+    pub fn new_from_file(path: String) -> Result<Logger, Errors> {
+        println!("before");
+        let mut file = File::open(&path)?;
+        let mut keys_pressed = KeysManager::new();
+        let new_x = Logger::load_from_disk(&mut file)?;
+        keys_pressed.set_keys_pressed_stats(new_x);
+        Ok(Logger {
+            file,
+            keys_manager: keys_pressed,
+            path,
+            evdev_converter: EvdevX11Converter::new("cuco"),
+        })
+    }
     pub fn send_key(&mut self, code: &u16, value: &i32) -> () {
         self.keys_manager.receive_keyevent(&code, &value);
     }
     pub fn print_to_file(&mut self) -> Result<(), Errors> {
         self.file = File::create(&self.path)?;
-        self.save_to_disk()?;
-        self.write_in_log(&self.nice_string())
-        // self.write_in_log(&self.keys_manager)
+        self.save_to_disk()
+        // self.write_in_log(&self.nice_string())
     }
     // TODO:
     // Well formatted string with all recorded key info
@@ -53,29 +69,26 @@ impl Logger {
         }
         text
     }
-    // TODO:
-    // Save data to disk
+    /// Save data to disk
     fn save_to_disk(&self) -> Result<(), Errors> {
         let serialized = serde_json::to_string(&self.keys_manager.get_keys_pressed_stats())?;
         let _ = self.write_in_log(&serialized);
         Ok(())
     }
-    // TODO:
-    // Load data from disk
-    fn load_from_disk(&self) -> Result<(), Errors> {
-        let serialized = serde_json::to_string(&self.keys_manager.get_keys_pressed_stats())?;
-        let deserialized: HashMap<u16, HashMap<u16, u32>> = serde_json::from_str(&serialized).unwrap();
-        // Prints deserialized = Point { x: 1, y: 2 }
-        println!("deserialized = {:?}", deserialized);
-        Ok(())
+    /// Load data from disk
+    fn load_from_disk(file: &mut File) -> Result<HashMap<u16, HashMap<u16, u32>>, Errors> {
+        let mut content = String::new();
+        file.read_to_string(&mut content)?;
+        let deserialized: HashMap<u16, HashMap<u16, u32>> = serde_json::from_str(&content)?;
+        Ok(deserialized)
     }
 
     fn write_in_log<T: std::fmt::Display>(&self, text: &T) -> Result<(), Errors> {
         writeln!(&self.file, "{}", text)?;
         Ok(())
     }
-    fn write_in_file(&self, text: &str) -> Result<(), Errors> {
-        writeln!(&self.file, "{}", text)?;
-        Ok(())
-    }
+    // fn write_in_file(&self, text: &str) -> Result<(), Errors> {
+    //     writeln!(&self.file, "{}", text)?;
+    //     Ok(())
+    // }
 }
