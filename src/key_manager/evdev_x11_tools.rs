@@ -26,7 +26,7 @@ impl EvdevX11Converter {
     }
 
     /// Return the x11 layer based on the EvdevModMask or 0
-    fn mod_mask_to_layer(mod_mask: &EvdevModMask) -> u32 {
+    pub fn mod_mask_to_layer(mod_mask: &EvdevModMask) -> u32 {
         let mod_mask = mod_mask.0;
         // Check the mod_mask for (shift, altgr ...)
         // layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96

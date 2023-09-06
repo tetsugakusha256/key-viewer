@@ -4,6 +4,7 @@ pub mod keystate_memory;
 
 use self::key_types::{EvdevKeyCode, EvdevModMask};
 use self::keystate_memory::{KeystateMemory, LogKeyEvent};
+use evdev_x11_tools::EvdevX11Converter;
 use std::{
     collections::{HashMap, VecDeque},
     fmt,
@@ -80,14 +81,28 @@ impl KeysManager {
     }
 
     /// map of all keys with clicks for a given mod_mask
-    pub fn hashmap_mod_keys(&self, mod_mask:&EvdevModMask) -> HashMap<EvdevKeyCode,u32> {
-        let mut hashmap = HashMap::<EvdevKeyCode,u32>::new();
+    /// same_layer_rule: if true shift_l shift_r are traited as one
+    pub fn hashmap_mod_keys(
+        &self,
+        mod_mask: &EvdevModMask,
+        same_layer_rule: &bool,
+    ) -> HashMap<EvdevKeyCode, u32> {
+        let mut hashmap = HashMap::<EvdevKeyCode, u32>::new();
         for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
-                for (_mod_mask, clicks) in mod_key_hashmap.iter() {
-                    if mod_mask == _mod_mask {
-                        hashmap.insert(*key_code, *clicks);
-                    }
+            for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                if *same_layer_rule
+                    && EvdevX11Converter::mod_mask_to_layer(mod_mask)
+                        == EvdevX11Converter::mod_mask_to_layer(_mod_mask)
+                {
+                    hashmap
+                        .entry(*key_code)
+                        .and_modify(|val| *val += clicks)
+                        .or_insert(*clicks);
+                } else if !*same_layer_rule && mod_mask == _mod_mask {
+                    hashmap.insert(*key_code, *clicks);
+                    break;
                 }
+            }
         }
         hashmap
     }

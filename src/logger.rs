@@ -76,7 +76,7 @@ impl Logger {
     pub fn nice_string_mask(&self, mod_mask: &EvdevModMask) -> String {
         let mut text = String::from("");
         text += &mod_mask.to_string();
-        let keystats_vec = self.keys_manager.hashmap_mod_keys(mod_mask);
+        let keystats_vec = self.keys_manager.hashmap_mod_keys(mod_mask, &true);
         for (code, clicks) in keystats_vec {
             text = text
                 + self.evdev_converter.get_x11_char(&code, &mod_mask).as_str()

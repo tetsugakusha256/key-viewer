@@ -14,7 +14,7 @@ pub struct App<'a> {
     /// current tab
     pub index: usize,
     logger: Logger,
-    keys_text: String,
+    pub texts: Vec<String>,
     pub vertical_scroll_state: ScrollbarState,
     pub horizontal_scroll_state: ScrollbarState,
     pub vertical_scroll: u16,
@@ -27,14 +27,18 @@ impl<'a> Default for App<'a> {
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
         )
         .unwrap();
-
-        let text = logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(0));
+        let mut texts = Vec::new();
+        // layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(0)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(2)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(16)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(18)));
         Self {
             titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
             logger,
-            keys_text: text,
+            texts,
             vertical_scroll: 0,
             horizontal_scroll: 0,
             vertical_scroll_state: ScrollbarState::default(),
@@ -48,8 +52,8 @@ impl<'a> App<'a> {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn logger_string(&self) -> String {
-        self.keys_text.to_string()
+    pub fn logger_string(&self, index:usize) -> String {
+        self.texts.get(index).unwrap().to_string()
     }
 
     /// Handles the tick event of the terminal.

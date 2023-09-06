@@ -15,7 +15,6 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     // See the following resources:
     // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
     // - https://github.com/ratatui-org/ratatui/tree/master/examples
-    let text = app.logger_string();
     let size = frame.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -39,7 +38,9 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
                 .bg(Color::Black),
         );
     frame.render_widget(tabs, chunks[0]);
-    app.vertical_scroll_state = app.vertical_scroll_state.content_length(text.len() as u16);
+    app.vertical_scroll_state = app
+        .vertical_scroll_state
+        .content_length(app.texts.len() as u16);
     // app.horizontal_scroll_state = app.horizontal_scroll_state.content_length(long_line.len());
     let create_block = |title| {
         Block::default()
@@ -50,18 +51,22 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
                 Style::default().add_modifier(Modifier::BOLD),
             ))
     };
-    let paragraph = Paragraph::new(text)
-        .style(Style::default().fg(Color::Gray))
-        .block(create_block("Default alignment (Left), no wrap"))
-        .scroll((app.vertical_scroll as u16, 0));
+    let mut paragraphs = Vec::new();
+    for text in app.texts.to_owned() {
+        let paragraph = Paragraph::new(text)
+            .style(Style::default().fg(Color::Gray))
+            .block(create_block("Default alignment (Left), no wrap"))
+            .scroll((app.vertical_scroll as u16, 0));
+        paragraphs.push(paragraph);
+    }
     let inner = match app.index {
-        0 => paragraph,
-        1 => paragraph,
-        2 => paragraph,
-        3 => paragraph,
+        0 => paragraphs.get(0),
+        1 => paragraphs.get(1),
+        2 => paragraphs.get(2),
+        3 => paragraphs.get(3),
         _ => unreachable!(),
     };
-    frame.render_widget(inner, chunks[1]);
+    frame.render_widget(inner.unwrap().to_owned(), chunks[1]);
     frame.render_stateful_widget(
         Scrollbar::default()
             .orientation(ScrollbarOrientation::VerticalRight)
