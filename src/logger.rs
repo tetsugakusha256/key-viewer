@@ -32,7 +32,6 @@ impl Logger {
         })
     }
     pub fn new_from_file(path: String) -> Result<Logger, Errors> {
-        println!("before");
         let mut file = File::open(&path)?;
         let mut keys_pressed = KeysManager::new();
         let new_x = Logger::load_from_disk(&mut file)?;
@@ -47,16 +46,11 @@ impl Logger {
     pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
         self.keys_manager.receive_keyevent(&code, &value);
     }
-    pub fn print_to_file(&mut self) -> Result<(), Errors> {
+    pub fn log_key_data(&mut self) -> Result<(), Errors> {
         self.file = File::create(&self.path)?;
         self.save_to_disk()
-        // self.write_in_log(&self.nice_string())
     }
-    // TODO:
-    // Well formatted string with all recorded key info
-    // Maybe make a list of all keys to loop through
-    // This get the hashmap and print everything in it
-    // Need another function that get all key on layout and retrieve the clicks
+
     pub fn nice_string(&self) -> String {
         let mut text = String::from("");
         if let Some(keystats_vec) = self.keys_manager.all_keys_stats_vec() {
@@ -80,7 +74,7 @@ impl Logger {
         for (code, clicks) in keystats_vec {
             text = text
                 + self.evdev_converter.get_x11_char(&code, &mod_mask).as_str()
-                + "\t clicked : "
+                + " \t \t "
                 + clicks.to_string().as_str()
                 + "\n";
         }

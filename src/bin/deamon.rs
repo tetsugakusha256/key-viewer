@@ -1,66 +1,35 @@
 extern crate evdev;
 
-use evdev::*;
-use std::io::{self, Read, Write};
-use key_capture::{logger, error_type, key_manager::key_types::EvdevKeyCode};
+use evdev::{Device, EventType, InputEvent, Key};
+use key_capture::{error_type, key_manager::key_types::EvdevKeyCode, logger};
 
-fn main() -> Result<(), error_type::Errors> {
-    let stdin = io::stdin();
-    let stdout = io::stdout();
+fn main() {
+    let path = "/dev/input/event16"; // Replace X with the appropriate event number
+    let mut device = Device::open(path).expect("Failed to create device");
 
-    let mut stdin_lock = stdin.lock();
-    let mut stdout_lock = stdout.lock();
-
-    let mut event_buffer = [0u8; std::mem::size_of::<InputEvent>()];
-    let mut buffer_offset = 0;
     let mut logger = logger::Logger::new(
-        "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+        "/home/anon/Documents/Code/RustLearning/key_capture/output_deamon.txt".to_string(),
     )
     .unwrap();
 
     loop {
-        let mut byte = [0u8; 1];
-        if stdin_lock.read_exact(&mut byte).is_err() {
-            break;
-        }
-
-        event_buffer[buffer_offset] = byte[0];
-        buffer_offset += 1;
-
-        if buffer_offset == std::mem::size_of::<InputEvent>() {
-            let event: InputEvent = unsafe { std::mem::transmute(event_buffer) };
-
-            if event.event_type() == EventType::KEY {
-                if event.code() == Key::KEY_INSERT.code() {
-                    let _ = logger.print_to_file();
+        if let Ok(events) = device.fetch_events() {
+            for event in events {
+                if event.event_type() == EventType::KEY {
+                    match event.value() {
+                        1 => {
+                            println!("Press");
+                            println!("event : {}", event.code())
+                        }
+                        _ => {}
+                    }
+                    if event.code() == Key::KEY_END.code() {
+                        let _ = logger.log_key_data();
+                    }
+                    logger.send_key(&EvdevKeyCode(event.code()), &event.value());
+                    if event.code() == Key::KEY_0.code() {}
                 }
-                logger.send_key(&EvdevKeyCode(event.code()), &event.value());
-
-                let new_event = InputEvent::new(EventType::KEY, event.code(), event.value());
-                let new_buffer: [u8; std::mem::size_of::<InputEvent>()] =
-                    unsafe { std::mem::transmute(new_event) };
-                stdout_lock.write_all(&new_buffer)?;
-                stdout_lock.flush()?; // Flush the output immediately
-            } else {
-                stdout_lock.write_all(&event_buffer)?;
-                stdout_lock.flush()?; // Flush the output immediately
             }
-
-            buffer_offset = 0;
         }
-    }
-
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn empty() {
-        assert_eq!(2, 2);
-    }
-    #[test]
-    fn empty_input() {
-        assert_eq!(1, 1);
     }
 }

@@ -13,7 +13,6 @@ pub struct App<'a> {
     pub titles: Vec<&'a str>,
     /// current tab
     pub index: usize,
-    logger: Logger,
     pub texts: Vec<String>,
     pub vertical_scroll_state: ScrollbarState,
     pub horizontal_scroll_state: ScrollbarState,
@@ -24,7 +23,7 @@ pub struct App<'a> {
 impl<'a> Default for App<'a> {
     fn default() -> Self {
         let logger = Logger::new_from_file(
-            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+            "/home/anon/Documents/Code/RustLearning/key_capture/output_deamon.txt".to_string(),
         )
         .unwrap();
         let mut texts = Vec::new();
@@ -37,7 +36,6 @@ impl<'a> Default for App<'a> {
             titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
-            logger,
             texts,
             vertical_scroll: 0,
             horizontal_scroll: 0,
@@ -52,8 +50,19 @@ impl<'a> App<'a> {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn logger_string(&self, index:usize) -> String {
-        self.texts.get(index).unwrap().to_string()
+    pub fn refresh_data(&mut self){
+        let logger = Logger::new_from_file(
+            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+        )
+        .unwrap();
+        let mut texts = Vec::new();
+        // layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(0)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(2)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(16)));
+        texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(18)));
+        self.texts = texts;
+
     }
 
     /// Handles the tick event of the terminal.

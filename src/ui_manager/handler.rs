@@ -6,6 +6,8 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
         KeyCode::Char('i') => app.next(),
         KeyCode::Char('h') => app.previous(),
+        KeyCode::Char('r') => app.refresh_data(),
+        KeyCode::Insert => app.refresh_data(),
         KeyCode::Char('n') => {
             app.vertical_scroll = app.vertical_scroll.saturating_add(1);
             app.vertical_scroll_state = app.vertical_scroll_state.position(app.vertical_scroll);
