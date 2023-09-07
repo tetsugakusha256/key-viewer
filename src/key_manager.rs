@@ -66,6 +66,18 @@ impl KeysManager {
             Some(keystate_list)
         }
     }
+    /// Get all clicks mod independent
+    pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
+        let mut total_clicks = 0;
+        for (_key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+            if key_code == _key_code {
+                for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                        total_clicks += clicks;
+                }
+            }
+        }
+        total_clicks
+    }
     /// Get number of clicks of a key with a specific mod on (or no mod)
     pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
         for (_key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {

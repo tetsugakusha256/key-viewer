@@ -1,6 +1,6 @@
 use tui::widgets::ScrollbarState;
 
-use crate::logger::Logger;
+use crate::{key_manager::key_types::{EvdevKeyCode, EvdevModMask}, logger::Logger};
 use std::error;
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -13,6 +13,7 @@ pub struct App<'a> {
     pub titles: Vec<&'a str>,
     /// current tab
     pub index: usize,
+    pub logger: Logger,
     pub texts: Vec<String>,
     pub vertical_scroll_state: ScrollbarState,
     pub horizontal_scroll_state: ScrollbarState,
@@ -23,7 +24,7 @@ pub struct App<'a> {
 impl<'a> Default for App<'a> {
     fn default() -> Self {
         let logger = Logger::new_from_file(
-            "/home/anon/Documents/Code/RustLearning/key_capture/output_deamon.txt".to_string(),
+            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
         )
         .unwrap();
         let mut texts = Vec::new();
@@ -33,9 +34,10 @@ impl<'a> Default for App<'a> {
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(16)));
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(18)));
         Self {
-            titles: vec!["Tab0", "Tab1", "Tab2", "Tab3"],
+            titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
+            logger,
             texts,
             vertical_scroll: 0,
             horizontal_scroll: 0,
@@ -50,7 +52,7 @@ impl<'a> App<'a> {
     pub fn new() -> Self {
         Self::default()
     }
-    pub fn refresh_data(&mut self){
+    pub fn refresh_data(&mut self) {
         let logger = Logger::new_from_file(
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
         )
@@ -61,8 +63,16 @@ impl<'a> App<'a> {
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(2)));
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(16)));
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(18)));
+        self.logger = logger;
         self.texts = texts;
-
+    }
+    /// Get number of clicks for a key
+    pub fn clicks(&self, key_code: &EvdevKeyCode) -> u32 {
+        self.logger.clicks(key_code, &EvdevModMask(0))
+    }
+    /// Get all clicks for a key
+    pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
+        self.logger.all_clicks(key_code)
     }
 
     /// Handles the tick event of the terminal.

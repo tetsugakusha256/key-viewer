@@ -1,9 +1,7 @@
 use crate::{
     error_type::Errors,
     key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
-    key_manager::{
-        key_types::{EvdevKeyCode, EvdevModMask},
-    },
+    key_manager::key_types::{EvdevKeyCode, EvdevModMask},
 };
 use std::{
     collections::HashMap,
@@ -43,9 +41,11 @@ impl Logger {
             evdev_converter: EvdevX11Converter::new("cuco"),
         })
     }
+
     pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
         self.keys_manager.receive_keyevent(&code, &value);
     }
+
     pub fn log_key_data(&mut self) -> Result<(), Errors> {
         self.file = File::create(&self.path)?;
         self.save_to_disk()
@@ -65,7 +65,13 @@ impl Logger {
         }
         text
     }
+    pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        self.keys_manager.clicks(key_code, mod_mask)
+    }
 
+    pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
+        self.keys_manager.all_clicks(key_code)
+    }
     /// String of all keys clicked on a given mod_mask
     pub fn nice_string_mask(&self, mod_mask: &EvdevModMask) -> String {
         let mut text = String::from("");

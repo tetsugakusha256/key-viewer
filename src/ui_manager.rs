@@ -3,7 +3,4 @@ pub mod tui;
 pub mod ui;
 pub mod event;
 pub mod handler;
-
-pub fn hi(){
-    println!("hi");
-}
+pub mod keyboard_widget;

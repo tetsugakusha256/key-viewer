@@ -9,12 +9,10 @@ use tui::{
 
 use crate::ui_manager::app::App;
 
+use super::keyboard_widget::draw_keyboard;
+
 /// Renders the user interface widgets.
 pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
-    // This is where you add new widgets.
-    // See the following resources:
-    // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
-    // - https://github.com/ratatui-org/ratatui/tree/master/examples
     let size = frame.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -59,14 +57,24 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
             .scroll((app.vertical_scroll as u16, 0));
         paragraphs.push(paragraph);
     }
-    let inner = match app.index {
-        0 => paragraphs.get(0),
-        1 => paragraphs.get(1),
-        2 => paragraphs.get(2),
-        3 => paragraphs.get(3),
+    match app.index {
+        0 => {
+            draw_keyboard(frame, chunks[1], &app);
+        }
+        1 => {
+            frame.render_widget(paragraphs.get(0).unwrap().to_owned(), chunks[1]);
+        }
+        2 => {
+            frame.render_widget(paragraphs.get(1).unwrap().to_owned(), chunks[1]);
+        }
+        3 => {
+            frame.render_widget(paragraphs.get(2).unwrap().to_owned(), chunks[1]);
+        }
+        4 => {
+            frame.render_widget(paragraphs.get(3).unwrap().to_owned(), chunks[1]);
+        }
         _ => unreachable!(),
     };
-    frame.render_widget(inner.unwrap().to_owned(), chunks[1]);
     frame.render_stateful_widget(
         Scrollbar::default()
             .orientation(ScrollbarOrientation::VerticalRight)
