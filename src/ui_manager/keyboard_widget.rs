@@ -1,20 +1,28 @@
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
 
-use crate::{key_manager::key_types::EvdevKeyCode, ui_manager::app};
-
 use super::app::App;
+use crate::key_manager::key_types::Layer;
+use crate::{
+    key_manager::evdev_x11_tools,
+    key_manager::{
+        evdev_x11_tools::EvdevX11Converter,
+        key_types::{self, EvdevKeyCode, EvdevModMask},
+    },
+    ui_manager::app,
+};
 //, keys: Vec<(u16,u32)>
-pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App) {
-    let example_rows = Layout::default()
+//TODO: Change color based on clicked amount, get min, max clicks and map a gradient on it
+//TODO: Change the key label using the X11 layout info
+pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, layer: Layer) {
+    let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(vec![
+            Length(2), // First keyboard row
             Length(2),
-            Length(3),
-            Length(3),
-            Length(3),
-            Length(3),
-            Length(3),
-            Length(3),
+            Length(2),
+            Length(2),
+            Length(2),
+            Length(2),
             Min(0), // fills remaining space
         ])
         .split(area);
@@ -109,19 +117,19 @@ pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App) {
         (EvdevKeyCode(66), "F8", Ratio(2, 36)),
         (EvdevKeyCode(67), "F9", Ratio(2, 36)),
         (EvdevKeyCode(68), "F10", Ratio(2, 36)),
-        (EvdevKeyCode(69), "F11", Ratio(2, 36)),
-        (EvdevKeyCode(70), "F12", Ratio(2, 36)),
+        (EvdevKeyCode(87), "F11", Ratio(2, 36)),
+        (EvdevKeyCode(88), "F12", Ratio(2, 36)),
         (EvdevKeyCode(102), "Home", Ratio(2, 36)),
         (EvdevKeyCode(107), "End", Ratio(2, 36)),
         (EvdevKeyCode(110), "Ins", Ratio(2, 36)),
         (EvdevKeyCode(111), "Del", Ratio(3, 36)),
     ];
-    render_single_row(frame, example_rows[0], keyboard_rows_fn, app);
-    render_single_row(frame, example_rows[1], keyboard_rows_numbers, app);
-    render_single_row(frame, example_rows[2], keyboard_rows_ad, app);
-    render_single_row(frame, example_rows[3], keyboard_rows_ac, app);
-    render_single_row(frame, example_rows[4], keyboard_rows_ab, app);
-    render_single_row(frame, example_rows[5], keyboard_rows_aa, app);
+    render_single_row(frame, chunks[0], keyboard_rows_fn, app, &layer);
+    render_single_row(frame, chunks[1], keyboard_rows_numbers, app, &layer);
+    render_single_row(frame, chunks[2], keyboard_rows_ad, app, &layer);
+    render_single_row(frame, chunks[3], keyboard_rows_ac, app, &layer);
+    render_single_row(frame, chunks[4], keyboard_rows_ab, app, &layer);
+    render_single_row(frame, chunks[5], keyboard_rows_aa, app, &layer);
 }
 /// Renders a single example line
 fn render_single_row<B: Backend>(
@@ -129,6 +137,7 @@ fn render_single_row<B: Backend>(
     area: Rect,
     keys: Vec<(EvdevKeyCode, &str, Constraint)>,
     app: &App,
+    layer: &Layer,
 ) {
     fn paragraph(key_name: &str, rnd: usize, clicks: u32) -> Paragraph {
         let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
@@ -146,7 +155,23 @@ fn render_single_row<B: Backend>(
         .direction(Direction::Horizontal)
         .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
         .split(area);
+    //TODO: Manage key_name in a more coherant way
     for (i, (key_code, name, constr)) in keys.iter().enumerate() {
-        frame.render_widget(paragraph(name, i, app.all_clicks(key_code)), row[i]);
+        let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
+
+        let _name = if x11_name.contains("keysym") {
+            name
+        } else {
+            x11_name.as_str()
+        };
+        match layer {
+            Layer::AllLayer => {
+                frame.render_widget(paragraph(_name, i, app.all_clicks(key_code)), row[i])
+            }
+            _ => frame.render_widget(
+                paragraph(_name, i, app.clicks(key_code, &layer.into())),
+                row[i],
+            ),
+        }
     }
 }

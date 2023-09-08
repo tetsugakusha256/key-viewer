@@ -4,3 +4,6 @@ pub mod ui;
 pub mod event;
 pub mod handler;
 pub mod keyboard_widget;
+pub mod bar_graph_keys_widget;
+pub mod show_info_widget;
+pub mod layer_choice_widget;

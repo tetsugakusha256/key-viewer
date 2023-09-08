@@ -2,8 +2,7 @@ use key_capture::ui_manager::app::{App, AppResult};
 use key_capture::ui_manager::event::{Event, EventHandler};
 use key_capture::ui_manager::handler::handle_key_events;
 use key_capture::ui_manager::tui::Tui;
-use std::{io, thread};
-use std::time::Duration;
+use std::io;
 use tui::backend::CrosstermBackend;
 use tui::Terminal;
 

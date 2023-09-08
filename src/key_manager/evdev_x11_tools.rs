@@ -6,6 +6,7 @@ use xkbcommon::xkb::KEYMAP_COMPILE_NO_FLAGS;
 
 use super::key_types::EvdevModMask;
 
+//TODO: add a layer to mod_mask converter and layer const and layer type
 pub struct EvdevX11Converter {
     keymap: Keymap,
 }

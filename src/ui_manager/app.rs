@@ -1,6 +1,9 @@
 use tui::widgets::ScrollbarState;
 
-use crate::{key_manager::key_types::{EvdevKeyCode, EvdevModMask}, logger::Logger};
+use crate::{
+    key_manager::{key_types::{EvdevKeyCode, EvdevModMask}, evdev_x11_tools::EvdevX11Converter},
+    logger::Logger,
+};
 use std::error;
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -13,6 +16,7 @@ pub struct App<'a> {
     pub titles: Vec<&'a str>,
     /// current tab
     pub index: usize,
+    pub evdev_x11_tools:EvdevX11Converter,
     pub logger: Logger,
     pub texts: Vec<String>,
     pub vertical_scroll_state: ScrollbarState,
@@ -39,6 +43,7 @@ impl<'a> Default for App<'a> {
             index: 0,
             logger,
             texts,
+            evdev_x11_tools: EvdevX11Converter::new("cuco"),
             vertical_scroll: 0,
             horizontal_scroll: 0,
             vertical_scroll_state: ScrollbarState::default(),
@@ -66,9 +71,9 @@ impl<'a> App<'a> {
         self.logger = logger;
         self.texts = texts;
     }
-    /// Get number of clicks for a key
-    pub fn clicks(&self, key_code: &EvdevKeyCode) -> u32 {
-        self.logger.clicks(key_code, &EvdevModMask(0))
+    /// Get number of clicks for a key -1 => all_clicks
+    pub fn clicks(&self, key_code: &EvdevKeyCode, layer: &EvdevModMask) -> u32 {
+            self.logger.clicks(key_code, layer)
     }
     /// Get all clicks for a key
     pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {

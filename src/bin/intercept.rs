@@ -13,7 +13,7 @@ fn main() -> Result<(), error_type::Errors> {
 
     let mut event_buffer = [0u8; std::mem::size_of::<InputEvent>()];
     let mut buffer_offset = 0;
-    let mut logger = logger::Logger::new(
+    let mut logger = logger::Logger::new_from_file(
         "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
     )
     .unwrap();
