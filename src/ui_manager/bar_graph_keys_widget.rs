@@ -1,7 +1,7 @@
 use crate::key_manager::key_types::{EvdevKeyCode, EvdevModMask};
 
 use super::app::App;
-use tui::{layout::Constraint::*, prelude::*, widgets::*};
+use tui::{prelude::*, widgets::*};
 pub fn draw_bar_graph<B: Backend>(
     frame: &mut Frame<B>,
     area: Rect,

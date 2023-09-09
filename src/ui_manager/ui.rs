@@ -2,8 +2,8 @@ use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style, Stylize},
-    text::{Line, Span},
-    widgets::{Block, Borders, Padding, Paragraph, Scrollbar, ScrollbarOrientation, Tabs},
+    text::{Span},
+    widgets::{Block, Borders, Paragraph},
     Frame,
 };
 

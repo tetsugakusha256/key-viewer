@@ -3,12 +3,9 @@ use tui::{layout::Constraint::*, prelude::*, widgets::*};
 use super::app::App;
 use crate::key_manager::key_types::Layer;
 use crate::{
-    key_manager::evdev_x11_tools,
     key_manager::{
-        evdev_x11_tools::EvdevX11Converter,
-        key_types::{self, EvdevKeyCode, EvdevModMask},
+        key_types::{EvdevKeyCode},
     },
-    ui_manager::app,
 };
 //, keys: Vec<(u16,u32)>
 //TODO: Change color based on clicked amount, get min, max clicks and map a gradient on it
@@ -156,7 +153,7 @@ fn render_single_row<B: Backend>(
         .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
         .split(area);
     //TODO: Manage key_name in a more coherant way
-    for (i, (key_code, name, constr)) in keys.iter().enumerate() {
+    for (i, (key_code, name, _constr)) in keys.iter().enumerate() {
         let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
         let _name = if x11_name.contains("keysym") {
             name

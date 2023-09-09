@@ -1,6 +1,6 @@
-use super::app::App;
-use evdev::enumerate;
-use tui::{layout::Constraint::*, prelude::*, widgets::*};
+
+
+use tui::{prelude::*, widgets::*};
 
 pub fn draw_layer_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: usize) {
     let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];

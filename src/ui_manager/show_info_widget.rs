@@ -1,5 +1,5 @@
-use super::app::App;
-use tui::{layout::Constraint::*, prelude::*, widgets::*};
+
+use tui::{prelude::*, widgets::*};
 pub fn draw_show_info<B: Backend>(frame: &mut Frame<B>, area: Rect) {
     let text = vec![
         Line::from(" "),
