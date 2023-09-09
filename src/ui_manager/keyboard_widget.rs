@@ -1,16 +1,8 @@
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
-
 use super::app::App;
-use crate::key_manager::key_types::Layer;
-use crate::{
-    key_manager::{
-        key_types::{EvdevKeyCode},
-    },
-};
-//, keys: Vec<(u16,u32)>
-//TODO: Change color based on clicked amount, get min, max clicks and map a gradient on it
-//TODO: Change the key label using the X11 layout info
-pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, layer: Layer) {
+use crate::key_manager::key_types::{self, Layer, EvdevKeyCode, EvdevModMask};
+
+pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, layer: &Layer) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(vec![
@@ -25,7 +17,6 @@ pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, la
         .split(area);
     //TODO: keyboard layout
     // nbr keys per row: 1->17, 2->14, 3->14, 4->14, 5->13, 6->11 , 6½->3
-    // idea: try creating the keyboard with the tuples, (evdev keycode, constraints)
     let keyboard_rows_aa = vec![
         (EvdevKeyCode(143), "Fn", Ratio(1, 15)),
         (EvdevKeyCode(29), "Ctrl", Ratio(1, 15)),
@@ -136,7 +127,21 @@ fn render_single_row<B: Backend>(
     app: &App,
     layer: &Layer,
 ) {
-    fn paragraph(key_name: &str, rnd: usize, clicks: u32) -> Paragraph {
+    fn draw_key_heatmap(key_name: &str, max_clicks: u32, clicks: u32) -> Paragraph {
+        let bg_value = ((22 * clicks) / max_clicks).try_into().unwrap_or(u8::MAX) + 233;
+        let color_bg = Color::Indexed(bg_value);
+        let color_fg = if bg_value > 248 {
+            Color::Indexed(232)
+        } else {
+            Color::Indexed(255)
+        };
+        let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
+        Paragraph::new(text.clone())
+            .alignment(Alignment::Center)
+            .bg(color_bg)
+            .fg(color_fg)
+    }
+    fn draw_key(key_name: &str, rnd: usize, clicks: u32) -> Paragraph {
         let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
         if rnd % 2 == 0 {
             Paragraph::new(text.clone())
@@ -152,9 +157,17 @@ fn render_single_row<B: Backend>(
         .direction(Direction::Horizontal)
         .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
         .split(area);
+    let mod_mask: EvdevModMask = layer.into();
+    let max_clicks = if layer == &Layer::AllLayer {
+        app.get_logger_ref().max_clicked_keys_all_layer()
+    } else {
+        app.get_logger_ref().max_clicked_keys(&mod_mask)
+    };
+    let max_clicks = max_clicks.get(0).unwrap_or(&(EvdevKeyCode(0), 0)).1;
     //TODO: Manage key_name in a more coherant way
-    for (i, (key_code, name, _constr)) in keys.iter().enumerate() {
+    for (i, (key_code, _, _constr)) in keys.iter().enumerate() {
         let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
+        let name = key_types::evdev_keycode_to_name(*key_code);
         let _name = if x11_name.contains("keysym") {
             name
         } else if x11_name.trim().len() == 0 {
@@ -166,16 +179,18 @@ fn render_single_row<B: Backend>(
         } else if x11_name.len() == 0 {
             name
         } else {
-            x11_name.as_str()
+            x11_name
         };
-        match layer {
-            Layer::AllLayer => {
-                frame.render_widget(paragraph(_name, i, app.all_clicks(key_code)), row[i])
-            }
-            _ => frame.render_widget(
-                paragraph(_name, i, app.clicks(key_code, &layer.into())),
+        if app.get_heatmap() {
+            frame.render_widget(
+                draw_key_heatmap(_name.as_str(), max_clicks, app.clicks(key_code, layer)),
                 row[i],
-            ),
+            )
+        } else {
+            frame.render_widget(
+                draw_key(_name.as_str(), i, app.clicks(key_code, layer)),
+                row[i],
+            )
         }
     }
 }

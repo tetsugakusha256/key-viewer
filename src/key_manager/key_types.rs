@@ -17,6 +17,7 @@ pub const LAYER_3: EvdevModMask = EvdevModMask(18);
 pub const LAYER_4: EvdevModMask = EvdevModMask(32);
 pub const LAYER_5: EvdevModMask = EvdevModMask(34);
 
+#[derive(PartialEq)]
 pub enum Layer {
     AllLayer,
     Layer0,
@@ -219,7 +220,7 @@ pub fn evdev_keycode_to_name(key_code: EvdevKeyCode) -> String {
         39 => "o",            
         40 => "'",            
         41 => "`",            
-        42 => "shift",        
+        42 => "LFSH",        
         43 => "¦",            
         44 => "z",            
         45 => "x",            
@@ -231,7 +232,7 @@ pub fn evdev_keycode_to_name(key_code: EvdevKeyCode) -> String {
         51 => ",",            
         52 => ".",            
         53 => "/",            
-        54 => "shift",        
+        54 => "RTSH",        
         56 => "Alt",          
         57 => "Space",        
         59 => "F1",           

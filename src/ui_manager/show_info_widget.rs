@@ -4,6 +4,10 @@ pub fn draw_show_info<B: Backend>(frame: &mut Frame<B>, area: Rect) {
     let text = vec![
         Line::from(" "),
         Line::from(vec![
+            "? ".red().into(),
+            ": toggle this help".into(),
+        ]),
+        Line::from(vec![
             "h ".red().into(),
             ": to change layer left".into(),
         ]),
@@ -20,13 +24,17 @@ pub fn draw_show_info<B: Backend>(frame: &mut Frame<B>, area: Rect) {
             ": to refresh".into(),
         ]),
         Line::from(vec![
+            "g ".red().into(),
+            ": toggle gradient view".into(),
+        ]),
+        Line::from(vec![
             "k ".red().into(),
             ": toggle key label".into(),
         ]),
     ];
     let create_block = |title| {
         Block::default()
-            .borders(Borders::NONE)
+            .borders(Borders::ALL)
             .style(Style::default().fg(Color::Gray))
             .title(Span::styled(
                 title,

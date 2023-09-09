@@ -1,16 +1,14 @@
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout},
+    prelude::Rect,
     style::{Color, Modifier, Style, Stylize},
-    text::{Span},
-    widgets::{Block, Borders, Paragraph},
+    text::Span,
+    widgets::{Block, Borders, Clear, Paragraph},
     Frame,
 };
 
-use crate::{
-    key_manager::key_types::*,
-    ui_manager::app::App,
-};
+use crate::{key_manager::key_types::*, ui_manager::app::App};
 
 use super::{
     bar_graph_keys_widget::draw_bar_graph, keyboard_widget::draw_keyboard,
@@ -49,16 +47,13 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
         .constraints(
             [
                 Constraint::Ratio(1, 20),
-                Constraint::Ratio(6, 20),
-                Constraint::Ratio(12, 20),
+                // Constraint::Ratio(6, 20),
+                Constraint::Ratio(18, 20),
                 Constraint::Ratio(1, 20),
             ]
             .as_ref(),
         )
         .split(chunks[2]);
-
-    let block = Block::default().style(Style::default());
-    frame.render_widget(block, size);
 
     draw_layer_choice(frame, chunks[0], app.index);
 
@@ -85,70 +80,46 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
         paragraphs.push(paragraph);
     }
     //TODO: make this more idiomatic draw_all(index)
-    match app.index {
-        0 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::AllLayer);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys_all_layer(),
-                app,
-            )
-        }
-        1 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer0);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys(&LAYER_0),
-                app,
-            )
-        }
-        2 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer1);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys(&LAYER_1),
-                app,
-            )
-        }
-        3 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer2);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys(&LAYER_2),
-                app,
-            )
-        }
-        4 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer3);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys(&LAYER_3),
-                app,
-            )
-        }
-        5 => {
-            draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer4);
-            draw_bar_graph(
-                frame,
-                bottom_chunks[2],
-                app.logger.max_clicked_keys(&LAYER_4),
-                app,
-            )
-        }
+    let layer = match app.index {
+        0 => Layer::AllLayer,
+        1 => Layer::Layer0,
+        2 => Layer::Layer1,
+        3 => Layer::Layer2,
+        4 => Layer::Layer3,
+        5 => Layer::Layer4,
         _ => unreachable!(),
     };
-    draw_show_info(frame, bottom_chunks[1]);
-    // frame.render_stateful_widget(
-    //     Scrollbar::default()
-    //         .orientation(ScrollbarOrientation::VerticalRight)
-    //         .begin_symbol(Some("↑"))
-    //         .end_symbol(Some("↓")),
-    //     chunks[1],
-    //     &mut app.vertical_scroll_state,
-    // );
+    draw_keyboard(frame, middle_chunks[1], &app, &layer);
+    draw_bar_graph(frame, bottom_chunks[1], app.clicked_keys(&layer), app, &layer);
+    if app.help_on {
+        let area = centered_rect(60, 60, size);
+        frame.render_widget(Clear, area); //this clears out the background
+        draw_show_info(frame, area)
+    }
+}
+/// helper function to create a centered rect using up certain percentage of the available rect `r`
+fn centered_rect(percent_x: u16, percent_y: u16, r: Rect) -> Rect {
+    let popup_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_y) / 2),
+                Constraint::Percentage(percent_y),
+                Constraint::Percentage((100 - percent_y) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(r);
+
+    Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage((100 - percent_x) / 2),
+                Constraint::Percentage(percent_x),
+                Constraint::Percentage((100 - percent_x) / 2),
+            ]
+            .as_ref(),
+        )
+        .split(popup_layout[1])[1]
 }

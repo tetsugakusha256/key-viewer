@@ -1,7 +1,10 @@
 use tui::widgets::ScrollbarState;
 
 use crate::{
-    key_manager::{key_types::{EvdevKeyCode, EvdevModMask}, evdev_x11_tools::EvdevX11Converter},
+    key_manager::{
+        evdev_x11_tools::EvdevX11Converter,
+        key_types::{EvdevKeyCode, EvdevModMask, Layer},
+    },
     logger::Logger,
 };
 use std::error;
@@ -14,9 +17,11 @@ pub struct App<'a> {
     pub running: bool,
     /// tabs titles
     pub titles: Vec<&'a str>,
+    pub heatmap_on: bool,
+    pub help_on: bool,
     /// current tab
     pub index: usize,
-    pub evdev_x11_tools:EvdevX11Converter,
+    pub evdev_x11_tools: EvdevX11Converter,
     pub logger: Logger,
     pub texts: Vec<String>,
     pub vertical_scroll_state: ScrollbarState,
@@ -41,6 +46,8 @@ impl<'a> Default for App<'a> {
             titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
+            heatmap_on: false,
+            help_on: false,
             logger,
             texts,
             evdev_x11_tools: EvdevX11Converter::new("cuco"),
@@ -72,12 +79,32 @@ impl<'a> App<'a> {
         self.texts = texts;
     }
     /// Get number of clicks for a key -1 => all_clicks
-    pub fn clicks(&self, key_code: &EvdevKeyCode, layer: &EvdevModMask) -> u32 {
-            self.logger.clicks(key_code, layer)
+    pub fn clicks(&self, key_code: &EvdevKeyCode, layer: &Layer) -> u32 {
+        if layer == &Layer::AllLayer {
+            self.logger.all_clicks(key_code)
+        } else {
+            self.logger.clicks(key_code, &layer.into())
+        }
     }
-    /// Get all clicks for a key
-    pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
-        self.logger.all_clicks(key_code)
+
+    pub fn clicked_keys(&self, layer: &Layer) -> Vec<(EvdevKeyCode, u32)> {
+        if layer == &Layer::AllLayer {
+            self.logger.max_clicked_keys_all_layer()
+        } else {
+            self.logger.max_clicked_keys(&layer.into())
+        }
+    }
+    pub fn get_logger_ref(&self) -> &Logger {
+        &self.logger
+    }
+    pub fn toggle_heatmap(&mut self) {
+        self.heatmap_on = !self.heatmap_on
+    }
+    pub fn toggle_help(&mut self) {
+        self.help_on = !self.help_on
+    }
+    pub fn get_heatmap(&self) -> bool {
+        self.heatmap_on
     }
 
     /// Handles the tick event of the terminal.

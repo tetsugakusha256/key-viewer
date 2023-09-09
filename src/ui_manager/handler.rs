@@ -6,6 +6,8 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
         KeyCode::Char('i') => app.next(),
         KeyCode::Char('h') => app.previous(),
+        KeyCode::Char('g') => app.toggle_heatmap(),
+        KeyCode::Char('?') => app.toggle_help(),
         KeyCode::Char('r') => app.refresh_data(),
         KeyCode::Insert => app.refresh_data(),
         KeyCode::Char('n') => {
