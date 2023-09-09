@@ -66,13 +66,38 @@ impl KeysManager {
             Some(keystate_list)
         }
     }
+    pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
+        let mut vec = Vec::new();
+        for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+            let mut total_clicks = 0;
+            for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                total_clicks += clicks;
+            }
+            vec.push((key_code.clone(), total_clicks.clone()));
+        }
+        vec.sort_by(|(_, clicks_0),(_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec
+    }
+    /// Get a sorted vec with key from the most clicked to the least clicked
+    pub fn max_clicked_keys(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
+        let mut vec = Vec::new();
+        for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
+            for (_mod_mask, clicks) in mod_key_hashmap.iter() {
+                if mod_mask == _mod_mask {
+                    vec.push((key_code.clone(), clicks.clone()));
+                }
+            }
+        }
+        vec.sort_by(|(_, clicks_0),(_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec
+    }
     /// Get all clicks mod independent
     pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
         let mut total_clicks = 0;
         for (_key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
             if key_code == _key_code {
                 for (_mod_mask, clicks) in mod_key_hashmap.iter() {
-                        total_clicks += clicks;
+                    total_clicks += clicks;
                 }
             }
         }
@@ -80,16 +105,17 @@ impl KeysManager {
     }
     /// Get number of clicks of a key with a specific mod on (or no mod)
     pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        let mut total_clicks = 0;
         for (_key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
             if key_code == _key_code {
                 for (_mod_mask, clicks) in mod_key_hashmap.iter() {
                     if mod_mask == _mod_mask {
-                        return *clicks;
+                        total_clicks += clicks;
                     }
                 }
             }
         }
-        0
+        total_clicks
     }
 
     /// map of all keys with clicks for a given mod_mask

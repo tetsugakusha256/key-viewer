@@ -158,8 +158,15 @@ fn render_single_row<B: Backend>(
     //TODO: Manage key_name in a more coherant way
     for (i, (key_code, name, constr)) in keys.iter().enumerate() {
         let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
-
         let _name = if x11_name.contains("keysym") {
+            name
+        } else if x11_name.trim().len() == 0 {
+            name
+        } else if key_code == &EvdevKeyCode(1) {
+            name
+        } else if key_code == &EvdevKeyCode(14) {
+            name
+        } else if x11_name.len() == 0 {
             name
         } else {
             x11_name.as_str()

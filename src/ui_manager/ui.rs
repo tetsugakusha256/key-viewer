@@ -7,7 +7,10 @@ use tui::{
     Frame,
 };
 
-use crate::{ui_manager::app::App, key_manager::key_types::{self, EvdevModMask, Layer}};
+use crate::{
+    key_manager::key_types::*,
+    ui_manager::app::App,
+};
 
 use super::{
     bar_graph_keys_widget::draw_bar_graph, keyboard_widget::draw_keyboard,
@@ -46,8 +49,8 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
         .constraints(
             [
                 Constraint::Ratio(1, 20),
-                Constraint::Ratio(9, 20),
-                Constraint::Ratio(9, 20),
+                Constraint::Ratio(6, 20),
+                Constraint::Ratio(12, 20),
                 Constraint::Ratio(1, 20),
             ]
             .as_ref(),
@@ -81,29 +84,65 @@ pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
             .scroll((app.vertical_scroll as u16, 0));
         paragraphs.push(paragraph);
     }
+    //TODO: make this more idiomatic draw_all(index)
     match app.index {
         0 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::AllLayer);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys_all_layer(),
+                app,
+            )
         }
         1 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer0);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys(&LAYER_0),
+                app,
+            )
         }
         2 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer1);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys(&LAYER_1),
+                app,
+            )
         }
         3 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer2);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys(&LAYER_2),
+                app,
+            )
         }
         4 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer3);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys(&LAYER_3),
+                app,
+            )
         }
         5 => {
             draw_keyboard(frame, middle_chunks[1], &app, Layer::Layer4);
+            draw_bar_graph(
+                frame,
+                bottom_chunks[2],
+                app.logger.max_clicked_keys(&LAYER_4),
+                app,
+            )
         }
         _ => unreachable!(),
     };
     draw_show_info(frame, bottom_chunks[1]);
-    draw_bar_graph(frame, bottom_chunks[2], app)
     // frame.render_stateful_widget(
     //     Scrollbar::default()
     //         .orientation(ScrollbarOrientation::VerticalRight)

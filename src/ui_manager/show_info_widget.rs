@@ -19,6 +19,10 @@ pub fn draw_show_info<B: Backend>(frame: &mut Frame<B>, area: Rect) {
             "r ".red().into(),
             ": to refresh".into(),
         ]),
+        Line::from(vec![
+            "k ".red().into(),
+            ": toggle key label".into(),
+        ]),
     ];
     let create_block = |title| {
         Block::default()

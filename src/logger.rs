@@ -65,6 +65,13 @@ impl Logger {
         }
         text
     }
+    pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_manager.max_clicked_keys_all_layer()
+    }
+
+    pub fn max_clicked_keys(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_manager.max_clicked_keys(mod_mask)
+    }
     pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
         self.keys_manager.clicks(key_code, mod_mask)
     }
