@@ -1,5 +1,3 @@
-
-
 use tui::{prelude::*, widgets::*};
 
 pub fn draw_layer_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: usize) {

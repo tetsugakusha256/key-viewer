@@ -3,14 +3,20 @@ use tui::widgets::ScrollbarState;
 use crate::{
     key_manager::{
         evdev_x11_tools::EvdevX11Converter,
-        key_types::{EvdevKeyCode, EvdevModMask, Layer},
+        key_types::{EvdevKeyCode, Layer},
     },
     logger::Logger,
 };
 use std::error;
+/// List of Tab (View)
+pub enum Tab{
+    LayerTab,
+    OneKeyTab,
+}
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
 
+// TODO: remove pub when possible
 /// Application.
 pub struct App<'a> {
     /// Is the application running?
@@ -19,7 +25,7 @@ pub struct App<'a> {
     pub titles: Vec<&'a str>,
     pub heatmap_on: bool,
     pub help_on: bool,
-    /// current tab
+    current_tab: Tab,
     pub index: usize,
     pub evdev_x11_tools: EvdevX11Converter,
     pub logger: Logger,
@@ -46,6 +52,7 @@ impl<'a> Default for App<'a> {
             titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             index: 0,
+            current_tab: Tab::OneKeyTab,
             heatmap_on: false,
             help_on: false,
             logger,
@@ -105,6 +112,15 @@ impl<'a> App<'a> {
     }
     pub fn get_heatmap(&self) -> bool {
         self.heatmap_on
+    }
+    pub fn get_current_tab(&self) -> &Tab{
+        &self.current_tab
+    }
+    pub fn one_key_tab_on(&mut self) {
+        self.current_tab = Tab::OneKeyTab
+    }
+    pub fn layer_tab_on(&mut self) {
+        self.current_tab = Tab::LayerTab
     }
 
     /// Handles the tick event of the terminal.

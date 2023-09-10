@@ -1,6 +1,5 @@
-use crate::key_manager::key_types::{self, EvdevKeyCode, EvdevModMask, Layer};
+use crate::{key_manager::key_types::{self, EvdevKeyCode, Layer}, ui_manager::app::App};
 
-use super::app::App;
 use tui::{prelude::*, widgets::*};
 pub fn draw_bar_graph<B: Backend>(
     frame: &mut Frame<B>,

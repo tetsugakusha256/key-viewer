@@ -1,7 +1,7 @@
 extern crate evdev;
 
-use evdev::{Device, EventType, InputEvent, Key};
-use key_capture::{error_type, key_manager::key_types::EvdevKeyCode, logger};
+use evdev::{Device, EventType, Key};
+use key_capture::{key_manager::key_types::EvdevKeyCode, logger};
 
 fn main() {
     let path = "/dev/input/event16"; // Replace X with the appropriate event number

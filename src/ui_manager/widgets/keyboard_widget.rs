@@ -1,6 +1,5 @@
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
-use super::app::App;
-use crate::key_manager::key_types::{self, Layer, EvdevKeyCode, EvdevModMask};
+use crate::{key_manager::key_types::{self, Layer, EvdevKeyCode, EvdevModMask}, ui_manager::app::App};
 
 pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, layer: &Layer) {
     let chunks = Layout::default()
