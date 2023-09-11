@@ -10,7 +10,7 @@ use std::{
     fmt,
 };
 
-const MAX_KEYS_CHAIN: usize = 4;
+const MAX_KEYS_CHAIN: usize = 2;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -18,7 +18,11 @@ const MAX_KEYS_CHAIN: usize = 4;
 pub struct KeysManager {
     current_keys: KeystateMemory,
     /// <key_code,(mode_bitmask,count)>
-    keys_pressed_stats: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
+    pub keys_pressed_stats: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
+    /// Store first key -> second key
+    pub keys_duo_stats: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
+    /// Store second key -> first key
+    keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
     keys_history: VecDeque<EvdevKeyCode>,
 }
 impl fmt::Display for KeysManager {
@@ -33,6 +37,8 @@ impl KeysManager {
         KeysManager {
             current_keys: KeystateMemory::new(),
             keys_pressed_stats: HashMap::new(),
+            keys_duo_stats: HashMap::new(),
+            keys_duo_stats_rev: HashMap::new(),
             keys_history: VecDeque::with_capacity(MAX_KEYS_CHAIN),
         }
     }
@@ -45,6 +51,9 @@ impl KeysManager {
     }
     pub fn get_keys_pressed_stats(&self) -> &HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> {
         return &self.keys_pressed_stats;
+    }
+    pub fn get_keys_duo_stats(&self) -> &HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>> {
+        return &self.keys_duo_stats;
     }
     pub fn set_keys_pressed_stats(
         &mut self,
@@ -75,7 +84,7 @@ impl KeysManager {
             }
             vec.push((key_code.clone(), total_clicks.clone()));
         }
-        vec.sort_by(|(_, clicks_0),(_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
         vec
     }
     /// Get a sorted vec with key from the most clicked to the least clicked
@@ -88,7 +97,7 @@ impl KeysManager {
                 }
             }
         }
-        vec.sort_by(|(_, clicks_0),(_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
         vec
     }
     /// Get all clicks mod independent
@@ -147,7 +156,23 @@ impl KeysManager {
 
     fn push_key_history(&mut self, key_code: &EvdevKeyCode) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
-            self.keys_history.pop_front();
+            // remove the oldest key and use it for the duo key data
+            if let Some(first_key) = self.keys_history.pop_front() {
+                if let Some(second_key) = self.keys_history.get(0) {
+                    self.keys_duo_stats
+                        .entry(first_key)
+                        .and_modify(|val| {
+                            val.entry(*second_key)
+                                .and_modify(|_val| *_val = *_val + 1)
+                                .or_insert(1);
+                        })
+                        .or_insert_with(|| {
+                            let mut x = HashMap::new();
+                            x.insert(*second_key, 1);
+                            x
+                        });
+                }
+            }
         }
         self.keys_history.push_back(key_code.clone());
     }

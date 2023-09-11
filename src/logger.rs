@@ -1,7 +1,7 @@
 use crate::{
     error_type::Errors,
-    key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
     key_manager::key_types::{EvdevKeyCode, EvdevModMask},
+    key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
 };
 use std::{
     collections::HashMap,
@@ -9,6 +9,24 @@ use std::{
     io::{Read, Write},
 };
 
+#[derive(serde::Deserialize, serde::Serialize)]
+struct OnDiskData {
+    /// <key_code,(mode_bitmask,count)>
+    pub keys_pressed_stats: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
+    /// Store first key -> second key
+    pub keys_duo_stats: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
+}
+impl OnDiskData {
+    pub fn new(
+        keys_pressed_stats: &HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
+        keys_duo_stats: &HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
+    ) -> OnDiskData {
+        OnDiskData {
+            keys_pressed_stats: keys_pressed_stats.clone(),
+            keys_duo_stats: keys_duo_stats.clone(),
+        }
+    }
+}
 /// Owns a keysmanager and a converter and manage the logging
 #[allow(dead_code)]
 pub struct Logger {
@@ -30,16 +48,16 @@ impl Logger {
         })
     }
     pub fn new_from_file(path: String) -> Result<Logger, Errors> {
-        let mut file = File::open(&path)?;
-        let mut keys_pressed = KeysManager::new();
-        let new_x = Logger::load_from_disk(&mut file)?;
-        keys_pressed.set_keys_pressed_stats(new_x);
-        Ok(Logger {
+        let file = File::open(&path)?;
+        let keys_pressed = KeysManager::new();
+        let mut logger = Logger {
             file,
             keys_manager: keys_pressed,
             path,
             evdev_converter: EvdevX11Converter::new("cuco"),
-        })
+        };
+        logger.load_from_disk();
+        Ok(logger)
     }
 
     pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
@@ -96,19 +114,26 @@ impl Logger {
     }
     /// Save data to disk
     fn save_to_disk(&self) -> Result<(), Errors> {
-        let serialized = serde_json::to_string(&self.keys_manager.get_keys_pressed_stats())?;
+        let data_to_save = OnDiskData::new(
+            self.keys_manager.get_keys_pressed_stats(),
+            self.keys_manager.get_keys_duo_stats(),
+        );
+        let serialized = serde_json::to_string(&data_to_save)?;
         let _ = self.write_in_log(&serialized);
         Ok(())
     }
     /// Load data from disk
     fn load_from_disk(
-        file: &mut File,
-    ) -> Result<HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>, Errors> {
+        &mut self,
+    ) -> Result<(), Errors> {
         let mut content = String::new();
-        file.read_to_string(&mut content)?;
-        let deserialized: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> =
+        self.file.read_to_string(&mut content)?;
+        let deserialized: OnDiskData =
             serde_json::from_str(&content)?;
-        Ok(deserialized)
+        let on_disk_data = deserialized;
+        self.keys_manager.keys_pressed_stats = on_disk_data.keys_pressed_stats;
+        self.keys_manager.keys_duo_stats = on_disk_data.keys_duo_stats;
+        Ok(())
     }
 
     fn write_in_log<T: std::fmt::Display>(&self, text: &T) -> Result<(), Errors> {

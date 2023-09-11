@@ -3,7 +3,11 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
 /// Handles the key events and updates the state of [`App`].
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
+    if app.select_key_mode {
+        // app.selected_key = key_event.code;
+    }
     match key_event.code {
+        KeyCode::Char('m') => app.toggle_select_key_mode(),
         KeyCode::Char('i') => app.next(),
         KeyCode::Char('h') => app.previous(),
         KeyCode::Char('g') => app.toggle_heatmap(),

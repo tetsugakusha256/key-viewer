@@ -1,6 +1,6 @@
 use tui::{prelude::{Rect, Layout, Direction, Constraint, Backend}, Frame, widgets::{Block, Borders, Paragraph}, style::{Style, Color, Modifier}, text::Span};
 
-use crate::{ui_manager::{app::App, widgets::{layer_choice_widget::draw_layer_choice, keyboard_widget::draw_keyboard, bar_graph_keys_widget::draw_bar_graph}}, key_manager::key_types::Layer};
+use crate::{ui_manager::{app::App, widgets::{layer_choice_widget::draw_text_choice, keyboard_widget::draw_keyboard, bar_graph_keys_widget::draw_bar_graph}}, key_manager::key_types::Layer};
 
 pub fn draw_layer_tab<B: Backend>(app: &App, size: Rect, frame: &mut Frame<B>) {
     let chunks = Layout::default()
@@ -38,7 +38,8 @@ pub fn draw_layer_tab<B: Backend>(app: &App, size: Rect, frame: &mut Frame<B>) {
         )
         .split(chunks[2]);
 
-    draw_layer_choice(frame, chunks[0], app.index);
+    let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];
+    draw_text_choice(frame, chunks[0], app.index, &layout_str);
 
     // frame.render_widget(tabs, chunks[1]);
     // app.vertical_scroll_state = app

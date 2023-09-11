@@ -1,9 +1,8 @@
 use tui::{prelude::*, widgets::*};
 
-pub fn draw_layer_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: usize) {
-    let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];
+pub fn draw_text_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: usize, text_vec: &Vec<&str>) {
     // color the selected word
-    let layout_colored: Vec<Span> = layout_str
+    let layout_colored: Vec<Span> = text_vec
         .iter()
         .enumerate()
         .map(|(i, str): (usize, &&str)| {

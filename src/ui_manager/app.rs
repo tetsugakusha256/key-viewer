@@ -9,7 +9,7 @@ use crate::{
 };
 use std::error;
 /// List of Tab (View)
-pub enum Tab{
+pub enum Tab {
     LayerTab,
     OneKeyTab,
 }
@@ -34,6 +34,9 @@ pub struct App<'a> {
     pub horizontal_scroll_state: ScrollbarState,
     pub vertical_scroll: u16,
     pub horizontal_scroll: u16,
+
+    pub select_key_mode: bool,
+    pub selected_key: u32,
 }
 
 impl<'a> Default for App<'a> {
@@ -51,6 +54,8 @@ impl<'a> Default for App<'a> {
         Self {
             titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
+            select_key_mode: false,
+            selected_key: 1,
             index: 0,
             current_tab: Tab::OneKeyTab,
             heatmap_on: false,
@@ -113,7 +118,7 @@ impl<'a> App<'a> {
     pub fn get_heatmap(&self) -> bool {
         self.heatmap_on
     }
-    pub fn get_current_tab(&self) -> &Tab{
+    pub fn get_current_tab(&self) -> &Tab {
         &self.current_tab
     }
     pub fn one_key_tab_on(&mut self) {
@@ -140,5 +145,8 @@ impl<'a> App<'a> {
         } else {
             self.index = self.titles.len() - 1;
         }
+    }
+    pub fn toggle_select_key_mode(&mut self) {
+        self.select_key_mode = !self.select_key_mode;
     }
 }
