@@ -22,7 +22,7 @@ pub struct KeysManager {
     /// Store first key -> second key
     pub keys_duo_stats: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
     /// Store second key -> first key
-    keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
+    // keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
     keys_history: VecDeque<EvdevKeyCode>,
 }
 impl fmt::Display for KeysManager {
@@ -38,7 +38,6 @@ impl KeysManager {
             current_keys: KeystateMemory::new(),
             keys_pressed_stats: HashMap::new(),
             keys_duo_stats: HashMap::new(),
-            keys_duo_stats_rev: HashMap::new(),
             keys_history: VecDeque::with_capacity(MAX_KEYS_CHAIN),
         }
     }
@@ -74,6 +73,32 @@ impl KeysManager {
         } else {
             Some(keystate_list)
         }
+    }
+    /// Return a vec of (key, clicks) that represent the frequency of key used before the given key
+    pub fn keys_clicked_before_key(&self, second_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        let mut vec = Vec::new();
+        for (first_key_code, second_key_hashmap) in self.keys_duo_stats.iter() {
+            for (second_key_code, clicks) in second_key_hashmap.iter() {
+                if second_key == second_key_code {
+                    vec.push((first_key_code.clone(), clicks.clone()));
+                }
+            }
+        }
+        vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec
+    }
+    /// Return a vec of (key, clicks) that represent the frequency of key used after the given key
+    pub fn keys_clicked_after_key(&self, first_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        let mut vec = Vec::new();
+        for (first_key_code, second_key_hashmap) in self.keys_duo_stats.iter() {
+            if first_key == first_key_code {
+                for (second_key_code, clicks) in second_key_hashmap.iter() {
+                    vec.push((second_key_code.clone(), clicks.clone()));
+                }
+            }
+        }
+        vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
+        vec
     }
     pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
         let mut vec = Vec::new();

@@ -7,7 +7,7 @@ use tui::{
 };
 
 use crate::{
-    key_manager::key_types::Layer,
+    key_manager::key_types::{Layer, EvdevKeyCode},
     ui_manager::{
         app::App,
         widgets::{
@@ -62,7 +62,7 @@ pub fn draw_one_key_tab<B: Backend>(app: &App, size: Rect, frame: &mut Frame<B>)
     draw_text_choice(frame, chunks[0], app.index, &layout_str);
     draw_one_key_info(frame, bottom_chunks[1], app);
 
-    let layout_line = Line::from("  Selected key : a").alignment(tui::prelude::Alignment::Left);
+    let layout_line = Line::from("  Selected key : ".to_string() + &app.selected_key.to_string()).alignment(tui::prelude::Alignment::Left);
     let paragraph = Paragraph::new(vec![Line::from(""), layout_line.clone()])
         .style(Style::default().fg(Color::Gray));
     frame.render_widget(paragraph, chunks[0]);
@@ -80,19 +80,22 @@ pub fn draw_one_key_tab<B: Backend>(app: &App, size: Rect, frame: &mut Frame<B>)
     draw_bar_graph_horiz(
         frame,
         bottom_chunks[3],
-        app.clicked_keys(&layer),
+        app.keys_clicked_before_key(&app.selected_key),
         app,
+        "Key Before"
     );
     draw_bar_graph_horiz(
         frame,
         bottom_chunks[5],
-        app.clicked_keys(&layer),
+        app.keys_clicked_after_key(&app.selected_key),
         app,
+        "Key After"
     );
     draw_bar_graph_horiz(
         frame,
         bottom_chunks[7],
         app.clicked_keys(&layer),
         app,
+        "test"
     );
 }

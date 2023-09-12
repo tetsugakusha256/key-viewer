@@ -36,7 +36,7 @@ pub struct App<'a> {
     pub horizontal_scroll: u16,
 
     pub select_key_mode: bool,
-    pub selected_key: u32,
+    pub selected_key: EvdevKeyCode,
 }
 
 impl<'a> Default for App<'a> {
@@ -55,7 +55,7 @@ impl<'a> Default for App<'a> {
             titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
             running: true,
             select_key_mode: false,
-            selected_key: 1,
+            selected_key: EvdevKeyCode(36),
             index: 0,
             current_tab: Tab::OneKeyTab,
             heatmap_on: false,
@@ -89,6 +89,12 @@ impl<'a> App<'a> {
         texts.push(logger.nice_string_mask(&crate::key_manager::key_types::EvdevModMask(18)));
         self.logger = logger;
         self.texts = texts;
+    }
+    pub fn keys_clicked_before_key(&self, second_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.logger.keys_clicked_before_key(second_key)
+    }
+    pub fn keys_clicked_after_key(&self, first_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.logger.keys_clicked_after_key(first_key)
     }
     /// Get number of clicks for a key -1 => all_clicks
     pub fn clicks(&self, key_code: &EvdevKeyCode, layer: &Layer) -> u32 {

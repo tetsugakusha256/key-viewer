@@ -83,6 +83,12 @@ impl Logger {
         }
         text
     }
+    pub fn keys_clicked_before_key(&self, second_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_manager.keys_clicked_before_key(second_key)
+    }
+    pub fn keys_clicked_after_key(&self, first_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_manager.keys_clicked_after_key(first_key)
+    }
     pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
         self.keys_manager.max_clicked_keys_all_layer()
     }

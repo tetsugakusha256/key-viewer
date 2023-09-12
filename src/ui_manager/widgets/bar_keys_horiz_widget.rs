@@ -9,6 +9,7 @@ pub fn draw_bar_graph_horiz<B: Backend>(
     area: Rect,
     keys: Vec<(EvdevKeyCode, u32)>,
     app: &App,
+    title: &str,
 ) {
     let mut bars: Vec<Bar> = vec![];
     for (key_code, clicks) in keys {
@@ -41,9 +42,9 @@ pub fn draw_bar_graph_horiz<B: Backend>(
     let block = Block::default()
         .borders(Borders::NONE)
         .style(Style::default().fg(Color::Gray))
-        .padding(Padding::new(1,1,1,1))
+        .padding(Padding::new(1, 1, 1, 1))
         .title(Span::styled(
-            "Key after :",
+            title,
             Style::default().add_modifier(Modifier::BOLD),
         ));
     let bar_group = BarGroup::default().bars(&bars);
