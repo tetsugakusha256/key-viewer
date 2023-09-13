@@ -10,6 +10,8 @@ fn main() -> AppResult<()> {
     // Create an application.
     let mut app = App::new();
 
+    // TODO: Add reader in app and read the device here
+    
     // Initialize the terminal user interface.
     let backend = CrosstermBackend::new(io::stderr());
     let terminal = Terminal::new(backend)?;

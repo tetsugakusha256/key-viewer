@@ -11,42 +11,19 @@ use std::{
 };
 
 const MAX_KEYS_CHAIN: usize = 2;
-
-#[allow(dead_code)]
-#[derive(Debug)]
-/// X11 agnostic, only works with evdev value
-pub struct KeysManager {
-    current_keys: KeystateMemory,
+#[derive(Debug, serde::Deserialize, serde::Serialize, Clone)]
+pub struct KeysStats {
     /// <key_code,(mode_bitmask,count)>
     pub keys_pressed_stats: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
     /// Store first key -> second key
     pub keys_duo_stats: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
-    /// Store second key -> first key
-    // keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
-    keys_history: VecDeque<EvdevKeyCode>,
 }
-impl fmt::Display for KeysManager {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let formatted_string = format!("{:#?}", &self.all_keys_stats_vec());
-        writeln!(f, "Stats: {}", formatted_string)
-    }
-}
-#[allow(dead_code)]
-impl KeysManager {
-    pub fn new() -> KeysManager {
-        KeysManager {
-            current_keys: KeystateMemory::new(),
+impl KeysStats {
+    pub fn new() -> KeysStats {
+        KeysStats {
             keys_pressed_stats: HashMap::new(),
             keys_duo_stats: HashMap::new(),
-            keys_history: VecDeque::with_capacity(MAX_KEYS_CHAIN),
         }
-    }
-    /// Update the state with the new key event
-    pub fn receive_keyevent(&mut self, key_code: &EvdevKeyCode, key_value: &i32) {
-        // Update the arrays
-        let key_update_result = self.current_keys.receive_keyevent(&key_code, &key_value);
-        // Update the statistics
-        self.update_keycount_hashmap(&key_update_result);
     }
     pub fn get_keys_pressed_stats(&self) -> &HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>> {
         return &self.keys_pressed_stats;
@@ -178,13 +155,106 @@ impl KeysManager {
         }
         hashmap
     }
+    /// Single key stats with the given mod_mask
+    fn key_stats(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        match self.keys_pressed_stats.get(key_code) {
+            Some(mod_key_hashmap) => match mod_key_hashmap.get(mod_mask) {
+                Some(pressed_amount) => pressed_amount.clone(),
+                None => 0,
+            },
+            None => 0,
+        }
+    }
+}
+
+#[allow(dead_code)]
+#[derive(Debug)]
+// TODO: extract the keys_pressed_stats and keys_duo_stats in it's own struct
+/// X11 agnostic, only works with evdev value
+pub struct KeysManager {
+    current_keys: KeystateMemory,
+    pub keys_stats: KeysStats,
+    /// Store second key -> first key
+    // keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
+    keys_history: VecDeque<EvdevKeyCode>,
+}
+impl fmt::Display for KeysManager {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let formatted_string = format!("{:#?}", &self.all_keys_stats_vec());
+        writeln!(f, "Stats: {}", formatted_string)
+    }
+}
+#[allow(dead_code)]
+impl KeysManager {
+    pub fn new() -> KeysManager {
+        KeysManager {
+            current_keys: KeystateMemory::new(),
+            keys_stats: KeysStats::new(),
+            keys_history: VecDeque::with_capacity(MAX_KEYS_CHAIN),
+        }
+    }
+    /// Update the state with the new key event
+    pub fn receive_keyevent(&mut self, key_code: &EvdevKeyCode, key_value: &i32) {
+        // Update the arrays
+        let key_update_result = self.current_keys.receive_keyevent(&key_code, &key_value);
+        // Update the statistics
+        self.update_keycount_hashmap(&key_update_result);
+    }
+    pub fn set_keys_pressed_stats(
+        &mut self,
+        new_keys_pressed_stats: HashMap<EvdevKeyCode, HashMap<EvdevModMask, u32>>,
+    ) -> () {
+        self.keys_stats.keys_pressed_stats = new_keys_pressed_stats;
+    }
+    /// (key_code, number of clics, mod_mask)
+    pub fn all_keys_stats_vec(&self) -> Option<Vec<(EvdevKeyCode, u32, EvdevModMask)>> {
+        self.keys_stats.all_keys_stats_vec()
+    }
+    /// Return a vec of (key, clicks) that represent the frequency of key used before the given key
+    pub fn keys_clicked_before_key(&self, second_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_stats.keys_clicked_before_key(second_key)
+    }
+    /// Return a vec of (key, clicks) that represent the frequency of key used after the given key
+    pub fn keys_clicked_after_key(&self, first_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_stats.keys_clicked_after_key(first_key)
+    }
+    pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_stats.max_clicked_keys_all_layer()
+    }
+    /// Get a sorted vec with key from the most clicked to the least clicked
+    pub fn max_clicked_keys(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
+        self.keys_stats.max_clicked_keys(mod_mask)
+    }
+    /// Get all clicks mod independent
+    pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {
+        self.keys_stats.all_clicks(key_code)
+    }
+    /// Get number of clicks of a key with a specific mod on (or no mod)
+    pub fn clicks(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        self.keys_stats.clicks(key_code, mod_mask)
+    }
+
+    /// map of all keys with clicks for a given mod_mask
+    /// same_layer_rule: if true shift_l shift_r are traited as one
+    pub fn hashmap_mod_keys(
+        &self,
+        mod_mask: &EvdevModMask,
+        same_layer_rule: &bool,
+    ) -> HashMap<EvdevKeyCode, u32> {
+        self.keys_stats.hashmap_mod_keys(mod_mask, same_layer_rule)
+    }
+    /// Single key stats with the given mod_mask
+    fn key_stats(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
+        self.keys_stats.key_stats(key_code, mod_mask)
+    }
 
     fn push_key_history(&mut self, key_code: &EvdevKeyCode) {
         if self.keys_history.len() == MAX_KEYS_CHAIN {
             // remove the oldest key and use it for the duo key data
             if let Some(first_key) = self.keys_history.pop_front() {
                 if let Some(second_key) = self.keys_history.get(0) {
-                    self.keys_duo_stats
+                    self.keys_stats
+                        .keys_duo_stats
                         .entry(first_key)
                         .and_modify(|val| {
                             val.entry(*second_key)
@@ -201,16 +271,6 @@ impl KeysManager {
         }
         self.keys_history.push_back(key_code.clone());
     }
-    /// Single key stats with the given mod_mask
-    fn key_stats(&self, key_code: &EvdevKeyCode, mod_mask: &EvdevModMask) -> u32 {
-        match self.keys_pressed_stats.get(key_code) {
-            Some(mod_key_hashmap) => match mod_key_hashmap.get(mod_mask) {
-                Some(pressed_amount) => pressed_amount.clone(),
-                None => 0,
-            },
-            None => 0,
-        }
-    }
 
     fn update_keycount_hashmap(&mut self, key_update_result: &Option<LogKeyEvent>) {
         match key_update_result {
@@ -218,7 +278,8 @@ impl KeysManager {
                 LogKeyEvent::KeyPressed(key_code) => {
                     let mod_mask = self.current_keys.get_mod_keys_mask();
                     self.push_key_history(key_code);
-                    self.keys_pressed_stats
+                    self.keys_stats
+                        .keys_pressed_stats
                         .entry(*key_code)
                         .and_modify(|val| {
                             val.entry(mod_mask)
