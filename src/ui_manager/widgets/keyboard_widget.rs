@@ -158,9 +158,9 @@ fn render_single_row<B: Backend>(
         .split(area);
     let mod_mask: EvdevModMask = layer.into();
     let max_clicks = if layer == &Layer::AllLayer {
-        app.get_logger_ref().max_clicked_keys_all_layer()
+        app.reader.keys_stats.max_clicked_keys_all_layer()
     } else {
-        app.get_logger_ref().max_clicked_keys(&mod_mask)
+        app.reader.keys_stats.max_clicked_keys(&mod_mask)
     };
     let max_clicks = max_clicks.get(0).unwrap_or(&(EvdevKeyCode(0), 0)).1;
     //TODO: Manage key_name in a more coherant way

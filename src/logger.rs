@@ -12,12 +12,19 @@ use std::{
 };
 
 #[derive(serde::Deserialize, serde::Serialize, Clone)]
-struct OnDiskData {
+pub struct OnDiskData {
     pub keys_stats: KeysStats,
 }
 impl OnDiskData {
     pub fn new(keys_stats: KeysStats) -> OnDiskData {
         OnDiskData { keys_stats }
+    }
+    /// Load data from disk
+    pub fn new_from_disk(file: &mut File) -> Result<OnDiskData, Errors> {
+        let mut content = String::new();
+        file.read_to_string(&mut content)?;
+        let deserialized: OnDiskData = serde_json::from_str(&content)?;
+        Ok(deserialized)
     }
 }
 /// Owns a keysmanager and a converter and manage the logging
@@ -41,19 +48,22 @@ impl Logger {
         })
     }
     pub fn new_from_file(path: String) -> Result<Logger, Errors> {
-        let file = File::open(&path)?;
+        let mut file = File::open(&path)?;
         let keys_pressed = KeysManager::new();
-        let mut logger = Logger {
-            file,
-            keys_manager: keys_pressed,
-            path: path.clone(),
-            evdev_converter: EvdevX11Converter::new("cuco"),
-        };
-        let res = logger.load_from_disk();
-        if let Some(err) = res.err(){
-            logger = Logger::new(path)?;
+        let res = OnDiskData::new_from_disk(&mut file);
+        match res {
+            Ok(on_disk_data) => {
+                let mut logger = Logger {
+                    file,
+                    keys_manager: keys_pressed,
+                    path: path.clone(),
+                    evdev_converter: EvdevX11Converter::new("cuco"),
+                };
+                logger.keys_manager.keys_stats = on_disk_data.keys_stats;
+                return Ok(logger);
+            }
+            Err(_) => return Logger::new(path),
         }
-        Ok(logger)
     }
 
     pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
@@ -117,20 +127,9 @@ impl Logger {
     /// Save data to disk
     fn save_to_disk(&self) -> Result<(), Errors> {
         //TODO: how to remove clone here?
-        let data_to_save = OnDiskData::new(
-            self.keys_manager.keys_stats.clone()
-        );
+        let data_to_save = OnDiskData::new(self.keys_manager.keys_stats.clone());
         let serialized = serde_json::to_string(&data_to_save)?;
         let _ = self.write_in_log(&serialized);
-        Ok(())
-    }
-    /// Load data from disk
-    fn load_from_disk(&mut self) -> Result<(), Errors> {
-        let mut content = String::new();
-        self.file.read_to_string(&mut content)?;
-        let deserialized: OnDiskData = serde_json::from_str(&content)?;
-        let on_disk_data = deserialized;
-        self.keys_manager.keys_stats = on_disk_data.keys_stats;
         Ok(())
     }
 

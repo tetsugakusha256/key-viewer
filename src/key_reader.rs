@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::fs::File;
 
 use crate::{
     error_type::Errors,
-    key_manager::{key_types::{EvdevKeyCode, EvdevModMask}, KeysStats},
+    key_manager::{key_types::EvdevKeyCode, KeysStats},
     key_manager::{
-        evdev_x11_tools::EvdevX11Converter, keystate_memory::KeystateMemory, KeysManager,
-    },
+        evdev_x11_tools::EvdevX11Converter, keystate_memory::KeystateMemory,
+    }, logger::OnDiskData,
 };
 
 /// Owns a keysmanager and a converter and manage the logging
@@ -21,6 +21,15 @@ impl KeyReader {
         Ok(KeyReader {
             current_keys: KeystateMemory::new(),
             keys_stats: KeysStats::new(),
+            evdev_converter: EvdevX11Converter::new("cuco"),
+        })
+    }
+    pub fn new_from_file(path: String) -> Result<KeyReader, Errors> {
+        let mut file = File::open(&path)?;
+        let keys_stats = OnDiskData::new_from_disk(&mut file)?.keys_stats;
+        Ok(KeyReader {
+            current_keys: KeystateMemory::new(),
+            keys_stats,
             evdev_converter: EvdevX11Converter::new("cuco"),
         })
     }

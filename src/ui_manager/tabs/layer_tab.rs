@@ -41,28 +41,6 @@ pub fn draw_layer_tab<B: Backend>(app: &App, size: Rect, frame: &mut Frame<B>) {
     let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];
     draw_text_choice(frame, chunks[0], app.index, &layout_str);
 
-    // frame.render_widget(tabs, chunks[1]);
-    // app.vertical_scroll_state = app
-    //     .vertical_scroll_state
-    //     .content_length(app.texts.len() as u16);
-    // app.horizontal_scroll_state = app.horizontal_scroll_state.content_length(long_line.len());
-    let create_block = |title| {
-        Block::default()
-            .borders(Borders::ALL)
-            .style(Style::default().fg(Color::Gray))
-            .title(Span::styled(
-                title,
-                Style::default().add_modifier(Modifier::BOLD),
-            ))
-    };
-    let mut paragraphs = Vec::new();
-    for text in app.texts.to_owned() {
-        let paragraph = Paragraph::new(text)
-            .style(Style::default().fg(Color::Gray))
-            .block(create_block("Default alignment (Left), no wrap"))
-            .scroll((app.vertical_scroll as u16, 0));
-        paragraphs.push(paragraph);
-    }
     //TODO: make this more idiomatic draw_all(index)
     let layer = match app.index {
         0 => Layer::AllLayer,
