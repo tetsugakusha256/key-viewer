@@ -7,18 +7,18 @@ use tui::{
 };
 
 use crate::ui_manager::app::App;
-use crate::ui_manager::app::Tab;
+use crate::ui_manager::app::Mode;
 
-use super::{tabs::{layer_tab::draw_layer_tab, one_key_tab::draw_one_key_tab}, widgets::show_info_widget::draw_show_info};
+use super::widgets::show_info_widget::draw_show_info;
 
 //TODO: Display info on current view (current mod, layer etc...)
 
 /// Renders the user interface widgets.
 pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     let size = frame.size();
-    match app.get_current_tab(){
-        Tab::LayerTab => draw_layer_tab(app, size, frame),
-        Tab::OneKeyTab => draw_one_key_tab(app, size, frame),
+    match app.get_current_mode(){
+        Mode::LayerMode => app.layer_tab.draw_layer_tab(app, size, frame),
+        Mode::OneKeyMode => app.one_key_tab.draw_one_key_tab(app, size, frame),
     }
     if app.help_on {
         let area = centered_rect(60, 60, size);

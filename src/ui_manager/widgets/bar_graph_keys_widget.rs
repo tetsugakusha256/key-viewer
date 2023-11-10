@@ -12,7 +12,7 @@ pub fn draw_bar_graph<B: Backend>(
     for (key_code, clicks) in keys {
         let key_code_string = app.evdev_x11_tools.get_x11_char(&key_code, &layer.into());
         let clicks_u64 = u64::from(clicks);
-        let name = key_types::evdev_keycode_to_name(key_code);
+        let name = key_types::evdev_keycode_to_name(&key_code);
         // Renaming some keys that x11 don't return correctly
         let _name = if key_code_string.contains("keysym") {
             name

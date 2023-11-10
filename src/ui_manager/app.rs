@@ -8,32 +8,41 @@ use crate::{
     key_reader::KeyReader,
 };
 use std::error;
+
+use super::{
+    tab_manager::TabManager,
+    tabs::{layer_tab::LayerTab, one_key_tab::OneKeyTab},
+};
 /// List of Tab (View)
-pub enum Tab {
-    LayerTab,
-    OneKeyTab,
+#[derive(PartialEq)]
+pub enum Mode {
+    LayerMode,
+    OneKeyMode,
 }
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
 
 // TODO: remove pub when possible
 /// Application.
+// TODO: extract data for tabs into there own class and just keep
+// an object representing the tab
 pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
     /// tabs titles
-    pub titles: Vec<&'a str>,
+    tab: TabManager<'a>,
+    pub one_key_tab: OneKeyTab<'a>,
+    pub layer_tab: LayerTab<'a>,
     pub heatmap_on: bool,
     pub help_on: bool,
-    current_tab: Tab,
-    pub index: usize,
     pub evdev_x11_tools: EvdevX11Converter,
     pub reader: KeyReader,
     pub vertical_scroll_state: ScrollbarState,
     pub horizontal_scroll_state: ScrollbarState,
     pub vertical_scroll: u16,
     pub horizontal_scroll: u16,
-
+    pub last_key: Option<EvdevKeyCode>,
+    pub current_keys: Vec<EvdevKeyCode>,
     pub select_key_mode: bool,
     pub selected_key: EvdevKeyCode,
 }
@@ -42,14 +51,17 @@ impl<'a> Default for App<'a> {
     fn default() -> Self {
         let reader = KeyReader::new_from_file(
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
-            ).unwrap();
+        )
+        .unwrap();
         Self {
-            titles: vec!["Keyboard View", "Tab0", "Tab1", "Tab2", "Tab3"],
+            tab: TabManager::new(vec!["Layer view", "One key view"]),
+            one_key_tab: OneKeyTab::default(),
+            layer_tab: LayerTab::default(),
+            current_keys: vec![],
             running: true,
+            last_key: None,
             select_key_mode: false,
             selected_key: EvdevKeyCode(36),
-            index: 0,
-            current_tab: Tab::OneKeyTab,
             heatmap_on: false,
             help_on: false,
             reader,
@@ -70,7 +82,8 @@ impl<'a> App<'a> {
     pub fn refresh_data(&mut self) {
         let reader = KeyReader::new_from_file(
             "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
-            ).unwrap();
+        )
+        .unwrap();
         self.reader = reader;
     }
     pub fn keys_clicked_before_key(&self, second_key: &EvdevKeyCode) -> Vec<(EvdevKeyCode, u32)> {
@@ -104,16 +117,13 @@ impl<'a> App<'a> {
     pub fn get_heatmap(&self) -> bool {
         self.heatmap_on
     }
-    pub fn get_current_tab(&self) -> &Tab {
-        &self.current_tab
+    pub fn get_current_mode(&self) -> &Mode {
+        match self.tab.index {
+            0 => &Mode::LayerMode,
+            1 => &Mode::OneKeyMode,
+            _ => unreachable!(),
+        }
     }
-    pub fn one_key_tab_on(&mut self) {
-        self.current_tab = Tab::OneKeyTab
-    }
-    pub fn layer_tab_on(&mut self) {
-        self.current_tab = Tab::LayerTab
-    }
-
     /// Handles the tick event of the terminal.
     pub fn tick(&self) {}
 
@@ -121,16 +131,23 @@ impl<'a> App<'a> {
     pub fn quit(&mut self) {
         self.running = false;
     }
-    pub fn next(&mut self) {
-        self.index = (self.index + 1) % self.titles.len();
-    }
-
-    pub fn previous(&mut self) {
-        if self.index > 0 {
-            self.index -= 1;
-        } else {
-            self.index = self.titles.len() - 1;
+    pub fn inner_next(&mut self) {
+        match self.get_current_mode() {
+            Mode::LayerMode => self.layer_tab.tab.next(),
+            Mode::OneKeyMode => self.one_key_tab.tab.next(),
         }
+    }
+    pub fn inner_previous(&mut self) {
+        match self.get_current_mode() {
+            Mode::LayerMode => self.layer_tab.tab.previous(),
+            Mode::OneKeyMode => self.one_key_tab.tab.previous(),
+        }
+    }
+    pub fn set_layer_mode(&mut self) {
+        self.tab.index = 0;
+    }
+    pub fn set_one_key_mode(&mut self) {
+        self.tab.index = 1;
     }
     pub fn toggle_select_key_mode(&mut self) {
         self.select_key_mode = !self.select_key_mode;

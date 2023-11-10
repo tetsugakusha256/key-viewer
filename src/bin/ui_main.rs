@@ -10,7 +10,10 @@ fn main() -> AppResult<()> {
     // Create an application.
     let mut app = App::new();
 
-    // TODO: Add reader in app and read the device here
+    // TODO: Try to communicate with the deamon instead of reading directly the device
+    // or find a way to make it so that I don't need the sudo command
+    // let device_path = "/dev/input/event16"; // Replace X with the appropriate event number
+    // let mut device = Device::open(device_path).expect("Failed to create device");
     
     // Initialize the terminal user interface.
     let backend = CrosstermBackend::new(io::stderr());
@@ -21,6 +24,12 @@ fn main() -> AppResult<()> {
 
     // Start the main loop.
     while app.running {
+        // Get input for custom process
+        // if let Ok(events) = device.fetch_events() {
+        //     for event in events {
+        //             app.reader.send_key(&EvdevKeyCode(event.code()), &event.value());
+        //     }
+        // }
         // Render the user interface.
         tui.draw(&mut app)?;
         // Handle events.

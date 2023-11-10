@@ -176,7 +176,7 @@ impl fmt::Display for EvdevModMask {
         writeln!(f, "{}", text)
     }
 }
-pub fn evdev_keycode_to_name(key_code: EvdevKeyCode) -> String {
+pub fn evdev_keycode_to_name(key_code: &EvdevKeyCode) -> String {
     //Colemak layout
     return match key_code.0 {
         1 => "Esc",           

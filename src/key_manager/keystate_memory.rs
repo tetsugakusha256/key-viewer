@@ -59,6 +59,9 @@ impl KeystateMemory {
             *e = (EvdevKeyCode(0), 0i32);
         }
     }
+    pub fn is_key_pressed(&self, key_code: &EvdevKeyCode) -> bool{
+        self.pressed_keys.iter().any(|e| e.0 == *key_code)
+    }
     fn is_mod_key(key_code: &EvdevKeyCode) -> bool {
         match *key_code {
             KEY_LEFTALT | KEY_LEFTCTRL | KEY_LEFTMETA | KEY_LEFTSHIFT | KEY_ISO3
@@ -168,7 +171,6 @@ mod tests {
     use super::*;
     #[test]
     fn mask_to_mod() {
-        let keystate_mem = KeystateMemory::new();
         let a = &EvdevModMask(0);
         let b = &EvdevModMask(1);
         let c = &EvdevModMask(3);

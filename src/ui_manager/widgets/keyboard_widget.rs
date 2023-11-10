@@ -1,7 +1,15 @@
+use crate::{
+    key_manager::key_types::{self, EvdevKeyCode, EvdevModMask, Layer},
+    ui_manager::app::{App, Mode},
+};
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
-use crate::{key_manager::key_types::{self, Layer, EvdevKeyCode, EvdevModMask}, ui_manager::app::App};
 
-pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, layer: &Layer) {
+pub fn draw_keyboard<B: Backend>(
+    frame: &mut Frame<B>,
+    area: Rect,
+    app: &App,
+    layer: &Layer,
+) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(vec![
@@ -112,7 +120,14 @@ pub fn draw_keyboard<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App, la
         (EvdevKeyCode(111), "Del", Ratio(3, 36)),
     ];
     render_single_row(frame, chunks[0], keyboard_rows_fn, app, &layer);
-    render_single_row(frame, chunks[1], keyboard_rows_numbers, app, &layer);
+    render_single_row(
+        frame,
+        chunks[1],
+        keyboard_rows_numbers,
+        app,
+        &layer,
+        
+    );
     render_single_row(frame, chunks[2], keyboard_rows_ad, app, &layer);
     render_single_row(frame, chunks[3], keyboard_rows_ac, app, &layer);
     render_single_row(frame, chunks[4], keyboard_rows_ab, app, &layer);
@@ -127,7 +142,14 @@ fn render_single_row<B: Backend>(
     layer: &Layer,
 ) {
     fn draw_key_heatmap(key_name: &str, max_clicks: u32, clicks: u32) -> Paragraph {
-        let bg_value = ((22 * clicks) / max_clicks).try_into().unwrap_or(u8::MAX) + 233;
+        // TODO: make something robust (check for edge cases)
+        // FIX: sometime clicks > max_clicks ...
+        // eprintln!("clicks: {}, max_clicks: {}", clicks, max_clicks);
+        let inter = match (22 * clicks).checked_div(max_clicks) {
+            Some(x) => x as u8,
+            None => 0,
+        };
+        let bg_value = inter + 233;
         let color_bg = Color::Indexed(bg_value);
         let color_fg = if bg_value > 248 {
             Color::Indexed(232)
@@ -140,18 +162,25 @@ fn render_single_row<B: Backend>(
             .bg(color_bg)
             .fg(color_fg)
     }
-    fn draw_key(key_name: &str, rnd: usize, clicks: u32) -> Paragraph {
+    fn draw_key(key_name: &str, rnd: usize, clicks: u32, highlight: bool) -> Paragraph {
         let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
-        if rnd % 2 == 0 {
+        if highlight {
             Paragraph::new(text.clone())
                 .alignment(Alignment::Center)
-                .on_black()
+                .on_red()
         } else {
-            Paragraph::new(text.clone())
-                .alignment(Alignment::Center)
-                .on_dark_gray()
+            if rnd % 2 == 0 {
+                Paragraph::new(text.clone())
+                    .alignment(Alignment::Center)
+                    .on_black()
+            } else {
+                Paragraph::new(text.clone())
+                    .alignment(Alignment::Center)
+                    .on_dark_gray()
+            }
         }
     }
+
     let row = Layout::default()
         .direction(Direction::Horizontal)
         .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
@@ -166,7 +195,7 @@ fn render_single_row<B: Backend>(
     //TODO: Manage key_name in a more coherant way
     for (i, (key_code, _, _constr)) in keys.iter().enumerate() {
         let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
-        let name = key_types::evdev_keycode_to_name(*key_code);
+        let name = key_types::evdev_keycode_to_name(key_code);
         let _name = if x11_name.contains("keysym") {
             name
         } else if x11_name.trim().len() == 0 {
@@ -186,8 +215,11 @@ fn render_single_row<B: Backend>(
                 row[i],
             )
         } else {
+            let highlight = app.selected_key == *key_code
+                && app.get_current_mode() == &Mode::OneKeyMode
+                || app.current_keys.contains(key_code);
             frame.render_widget(
-                draw_key(_name.as_str(), i, app.clicks(key_code, layer)),
+                draw_key(_name.as_str(), i, app.clicks(key_code, layer), highlight),
                 row[i],
             )
         }

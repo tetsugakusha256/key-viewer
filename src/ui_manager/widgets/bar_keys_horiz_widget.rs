@@ -17,7 +17,7 @@ pub fn draw_bar_graph_horiz<B: Backend>(
             .evdev_x11_tools
             .get_x11_char(&key_code, &Layer::AllLayer.into());
 
-        let name = key_types::evdev_keycode_to_name(key_code);
+        let name = key_types::evdev_keycode_to_name(&key_code);
         // Renaming some keys that x11 don't return correctly
         let _name = if key_code_string.contains("keysym") {
             name

@@ -1,12 +1,12 @@
 use tui::{prelude::*, widgets::*};
 
-pub fn draw_text_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: usize, text_vec: &Vec<&str>) {
+pub fn draw_text_choice<B: Backend>(frame: &mut Frame<B>, area: Rect, indice: &usize, text_vec: &Vec<&str>) {
     // color the selected word
     let layout_colored: Vec<Span> = text_vec
         .iter()
         .enumerate()
         .map(|(i, str): (usize, &&str)| {
-            if i == indice {
+            if &i == indice {
                 str.red().underlined()
             } else {
                 Span::from(*str)
