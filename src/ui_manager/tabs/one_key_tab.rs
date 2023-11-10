@@ -59,13 +59,12 @@ impl<'a> OneKeyTab<'a> {
             .constraints(
                 [
                     Constraint::Ratio(1, 32),
-                    Constraint::Ratio(5, 32),
+                    Constraint::Ratio(10, 32),
                     Constraint::Ratio(1, 32),
                     Constraint::Ratio(7, 32),
                     Constraint::Ratio(1, 32),
-                    Constraint::Ratio(7, 32),
+                    Constraint::Ratio(10, 32),
                     Constraint::Ratio(1, 32),
-                    Constraint::Ratio(8, 32),
                     Constraint::Ratio(1, 32),
                 ]
                 .as_ref(),
@@ -73,7 +72,7 @@ impl<'a> OneKeyTab<'a> {
             .split(chunks[2]);
 
         draw_text_choice(frame, chunks[0], &self.tab.index, &self.tab.titles);
-        draw_one_key_info(frame, bottom_chunks[1], app);
+        draw_one_key_info(frame, bottom_chunks[3], app);
 
         let name = key_types::evdev_keycode_to_name(&app.selected_key);
         let layout_line = Line::from("  Selected key : ".to_string() + &name)
@@ -90,7 +89,7 @@ impl<'a> OneKeyTab<'a> {
         draw_keyboard(frame, middle_chunks[1], &app, &layer);
         draw_bar_graph_horiz(
             frame,
-            bottom_chunks[3],
+            bottom_chunks[1],
             app.keys_clicked_before_key(&app.selected_key),
             app,
             "Key Before",
@@ -102,12 +101,12 @@ impl<'a> OneKeyTab<'a> {
             app,
             "Key After",
         );
-        draw_bar_graph_horiz(
-            frame,
-            bottom_chunks[7],
-            app.clicked_keys(&layer),
-            app,
-            "Total",
-        );
+        // draw_bar_graph_horiz(
+        //     frame,
+        //     bottom_chunks[7],
+        //     app.clicked_keys(&layer),
+        //     app,
+        //     "Total",
+        // );
     }
 }
