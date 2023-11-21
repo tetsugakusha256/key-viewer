@@ -20,7 +20,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/tetsugakusha256/key-viewer">
-    <img src="images/pic1.png" alt="Logo" width="160" height="160">
+    <img src="images/pic1.png" alt="Logo" width="288" height="116">
   </a>
 
 <h3 align="center">key-viewer</h3>
@@ -70,7 +70,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Overall statistics][product-screenshot1]]
+[![Per key statistics][product-screenshot2]]
+[![Heatmap key usage repartition][product-screenshot3]]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -183,4 +185,6 @@ Don't forget to give the project a star! Thanks again!
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [Rust.org]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
 [Rust-url]: https://rust-lang.org
-[product-screenshot]: images/screenshot.png
+[product-screenshot1]: images/pic1.png
+[product-screenshot2]: images/pic2.png
+[product-screenshot3]: images/pic3.png
