@@ -25,7 +25,7 @@
 <h3 align="center">key-viewer</h3>
 
   <p align="center">
-    project_description
+    TUI key statistics viewer
     <br />
     <a href="https://github.com/tetsugakusha256/key-viewer/issues">Report Bug</a>
     ·
@@ -151,17 +151,6 @@ Don't forget to give the project a star! Thanks again!
 [![Rust][Rust-shield]][Rust-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-%% <!-- ACKNOWLEDGMENTS -->
-%% ## Acknowledgments
-%%
-%% * []()
-%% * []()
-%% * []()
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
