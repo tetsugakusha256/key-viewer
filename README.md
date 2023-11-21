@@ -12,7 +12,6 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
 
 
 
@@ -28,11 +27,6 @@
   <p align="center">
     project_description
     <br />
-    <a href="https://github.com/tetsugakusha256/key-viewer"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/tetsugakusha256/key-viewer">View Demo</a>
-    ·
     <a href="https://github.com/tetsugakusha256/key-viewer/issues">Report Bug</a>
     ·
     <a href="https://github.com/tetsugakusha256/key-viewer/issues">Request Feature</a>
@@ -47,9 +41,6 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -61,6 +52,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#built-with">Built With</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
@@ -70,31 +62,25 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Overall statistics][product-screenshot1]]
-[![Per key statistics][product-screenshot2]]
-[![Heatmap key usage repartition][product-screenshot3]]
+
+This project aims to provied a nice way to look at keyboard usage statistics.
+
+My motivation was to have a tool to help me designed a custom keyboard layout that would maximase the usage of the homerow.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
-### Built With
-
-* [![Rust][Rust.org]][Rust-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting started
 
 ```sh
-cargo build
+cargo build --release
 ```
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * cargo
 
 ### Installation
@@ -109,8 +95,8 @@ This is an example of how to list things you need to use the software and how to
    ```
 3. Setup key aquisition via the 2 possible options.
    Key aquisition only save the number of presses per key and key pairs.
-  1. Interception tool
-  2. Stat logger deamon
+  * Interception tool 
+  * Stat logger deamon 
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -120,9 +106,14 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+[Per key statistics][product-screenshot2]
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+
+Per key statistics view
+
+[Heatmap key usage repartition][product-screenshot3]
+
+Heatmap repartition view
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -131,10 +122,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Support for per day key-logging and time based statistics
 
 See the [open issues](https://github.com/tetsugakusha256/key-viewer/issues) for a full list of proposed features (and known issues).
 
@@ -158,13 +146,19 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Built With
 
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
+[![Rust][Rust-shield]][Rust-url]
 
-* []()
-* []()
-* []()
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+
+%% <!-- ACKNOWLEDGMENTS -->
+%% ## Acknowledgments
+%%
+%% * []()
+%% * []()
+%% * []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,7 +177,7 @@ Don't forget to give the project a star! Thanks again!
 [license-url]: https://github.com/tetsugakusha256/key-viewer/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
-[Rust.org]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
+[Rust-shield]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
 [Rust-url]: https://rust-lang.org
 [product-screenshot1]: images/pic1.png
 [product-screenshot2]: images/pic2.png
