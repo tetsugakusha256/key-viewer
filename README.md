@@ -13,7 +13,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 
 
 
@@ -21,7 +20,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/tetsugakusha256/key-viewer">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/pic1.png" alt="Logo" width="160" height="160">
   </a>
 
 <h3 align="center">key-viewer</h3>
@@ -62,8 +61,6 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
@@ -75,7 +72,6 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `tetsugakusha256`, `key-viewer`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `key-viewer`, `project_description`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,19 +97,19 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/tetsugakusha256/key-viewer.git
    ```
-3. Install NPM packages
+2. Compile
    ```sh
-   npm install
+   cargo build --release
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+3. Setup key aquisition via the 2 possible options.
+   Key aquisition only save the number of presses per key and key pairs.
+  1. Interception tool
+  2. Stat logger deamon
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -159,16 +155,6 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- ACKNOWLEDGMENTS -->
