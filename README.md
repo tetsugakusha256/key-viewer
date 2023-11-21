@@ -65,7 +65,7 @@
 
 This project aims to provied a nice way to look at keyboard usage statistics.
 
-My motivation was to have a tool to help me designed a custom keyboard layout that would maximase the usage of the homerow.
+My motivation was to have a tool to help me designed a custom keyboard layout that would maximise the usage of the homerow.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -106,12 +106,12 @@ cargo build --release
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-[Per key statistics][product-screenshot2]
+![Per key statistics][product-screenshot2]
 
 
 Per key statistics view
 
-[Heatmap key usage repartition][product-screenshot3]
+![Heatmap key usage repartition][product-screenshot3]
 
 Heatmap repartition view
 
