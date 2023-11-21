@@ -29,14 +29,14 @@
   <p align="center">
     project_description
     <br />
-    <a href="https://github.com/getsugakusha256/key-viewer"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/tetsugakusha256/key-viewer"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/getsugakusha256/key-viewer">View Demo</a>
+    <a href="https://github.com/tetsugakusha256/key-viewer">View Demo</a>
     ·
-    <a href="https://github.com/getsugakusha256/key-viewer/issues">Report Bug</a>
+    <a href="https://github.com/tetsugakusha256/key-viewer/issues">Report Bug</a>
     ·
-    <a href="https://github.com/getsugakusha256/key-viewer/issues">Request Feature</a>
+    <a href="https://github.com/tetsugakusha256/key-viewer/issues">Request Feature</a>
   </p>
 </div>
 
@@ -75,7 +75,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `getsugakusha256`, `key-viewer`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `key-viewer`, `project_description`
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `tetsugakusha256`, `key-viewer`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `key-viewer`, `project_description`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -104,7 +104,7 @@ This is an example of how to list things you need to use the software and how to
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
    ```sh
-   git clone https://github.com/getsugakusha256/key-viewer.git
+   git clone https://github.com/tetsugakusha256/key-viewer.git
    ```
 3. Install NPM packages
    ```sh
@@ -138,7 +138,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/getsugakusha256/key-viewer/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/tetsugakusha256/key-viewer/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,16 +183,16 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[contributors-shield]: https://img.shields.io/github/contributors/getsugakusha256/key-viewer.svg?style=for-the-badge
-[contributors-url]: https://github.com/getsugakusha256/key-viewer/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/getsugakusha256/key-viewer.svg?style=for-the-badge
-[forks-url]: https://github.com/getsugakusha256/key-viewer/network/members
-[stars-shield]: https://img.shields.io/github/stars/getsugakusha256/key-viewer.svg?style=for-the-badge
-[stars-url]: https://github.com/getsugakusha256/key-viewer/stargazers
-[issues-shield]: https://img.shields.io/github/issues/getsugakusha256/key-viewer.svg?style=for-the-badge
-[issues-url]: https://github.com/getsugakusha256/key-viewer/issues
-[license-shield]: https://img.shields.io/github/license/getsugakusha256/key-viewer.svg?style=for-the-badge
-[license-url]: https://github.com/getsugakusha256/key-viewer/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/tetsugakusha256/key-viewer.svg?style=for-the-badge
+[contributors-url]: https://github.com/tetsugakusha256/key-viewer/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/tetsugakusha256/key-viewer.svg?style=for-the-badge
+[forks-url]: https://github.com/tetsugakusha256/key-viewer/network/members
+[stars-shield]: https://img.shields.io/github/stars/tetsugakusha256/key-viewer.svg?style=for-the-badge
+[stars-url]: https://github.com/tetsugakusha256/key-viewer/stargazers
+[issues-shield]: https://img.shields.io/github/issues/tetsugakusha256/key-viewer.svg?style=for-the-badge
+[issues-url]: https://github.com/tetsugakusha256/key-viewer/issues
+[license-shield]: https://img.shields.io/github/license/tetsugakusha256/key-viewer.svg?style=for-the-badge
+[license-url]: https://github.com/tetsugakusha256/key-viewer/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [Rust.org]: https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white
