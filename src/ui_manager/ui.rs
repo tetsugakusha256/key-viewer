@@ -9,7 +9,7 @@ use tui::{
 use crate::ui_manager::app::App;
 use crate::ui_manager::app::Mode;
 
-use super::widgets::show_info_widget::draw_show_info;
+use super::widgets::show_info_widget::draw as draw_info;
 
 //TODO: Display info on current view (current mod, layer etc...)
 
@@ -17,13 +17,13 @@ use super::widgets::show_info_widget::draw_show_info;
 pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     let size = frame.size();
     match app.get_current_mode(){
-        Mode::LayerMode => app.layer_tab.draw_layer_tab(app, size, frame),
-        Mode::OneKeyMode => app.one_key_tab.draw_one_key_tab(app, size, frame),
+        Mode::LayerMode => app.layer_tab.draw(app, size, frame),
+        Mode::OneKeyMode => app.one_key_tab.draw(app, size, frame),
     }
     if app.help_on {
         let area = centered_rect(60, 60, size);
         frame.render_widget(Clear, area); //this clears out the background
-        draw_show_info(frame, area)
+        draw_info(frame, area)
     }
 }
 /// helper function to create a centered rect using up certain percentage of the available rect `r`

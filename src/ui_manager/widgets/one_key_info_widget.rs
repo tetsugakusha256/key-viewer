@@ -23,10 +23,10 @@ pub fn draw_one_key_info<B: Backend>(frame: &mut Frame<B>, area: Rect, app: &App
     let key = &app.selected_key;
     let key_code = key.to_string();
     let key_name = key_types::evdev_keycode_to_name(key);
-    let key_char_l0 = &app.evdev_x11_tools.get_x11_char(key, &LAYER_0);
-    let key_char_l1 = &app.evdev_x11_tools.get_x11_char(key, &LAYER_1);
-    let key_char_l2 = &app.evdev_x11_tools.get_x11_char(key, &LAYER_2);
-    let key_char_l3 = &app.evdev_x11_tools.get_x11_char(key, &LAYER_3);
+    let key_char_l0 = &app.evdev_x11_tools.get_key_char(key, &LAYER_0);
+    let key_char_l1 = &app.evdev_x11_tools.get_key_char(key, &LAYER_1);
+    let key_char_l2 = &app.evdev_x11_tools.get_key_char(key, &LAYER_2);
+    let key_char_l3 = &app.evdev_x11_tools.get_key_char(key, &LAYER_3);
     let key_clicks_l0 = &app.clicks(key, &Layer::Layer0).to_string();
     let key_clicks_l1 = &app.clicks(key, &Layer::Layer1).to_string();
     let key_clicks_l2 = &app.clicks(key, &Layer::Layer2).to_string();

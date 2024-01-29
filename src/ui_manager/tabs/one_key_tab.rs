@@ -31,7 +31,7 @@ impl<'a> OneKeyTab<'a> {
             tab: TabManager::new(layout_str),
         }
     }
-    pub fn draw_one_key_tab<B: Backend>(&self, app: &App, size: Rect, frame: &mut Frame<B>) {
+    pub fn draw<B: Backend>(&self, app: &App, size: Rect, frame: &mut Frame<B>) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
             .constraints(

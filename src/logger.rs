@@ -81,7 +81,7 @@ impl Logger {
             for (code, clicks, map) in keystats_vec {
                 text = text + &map.to_string();
                 text = text
-                    + self.evdev_converter.get_x11_char(&code, &map).as_str()
+                    + self.evdev_converter.get_key_char(&code, &map).as_str()
                     + "\t clicked : "
                     + clicks.to_string().as_str()
                     + "\n";
@@ -116,7 +116,7 @@ impl Logger {
         let keystats_vec = self.keys_manager.hashmap_mod_keys(mod_mask, &true);
         for (code, clicks) in keystats_vec {
             text = text
-                + self.evdev_converter.get_x11_char(&code, &mod_mask).as_str()
+                + self.evdev_converter.get_key_char(&code, &mod_mask).as_str()
                 + " \t \t "
                 + clicks.to_string().as_str()
                 + "\n";

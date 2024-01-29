@@ -1,5 +1,5 @@
 use crate::{
-    key_manager::key_types::{self, EvdevKeyCode, EvdevModMask, Layer},
+    key_manager::key_types::{EvdevKeyCode, EvdevModMask, Layer},
     ui_manager::app::{App, Mode},
 };
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
@@ -207,21 +207,7 @@ pub fn draw_keyboard<B: Backend>(
         let max_clicks = sorted_clicks_vec.get(1).unwrap_or(&(EvdevKeyCode(0), 0)).1;
         //TODO: Manage key_name in a more coherant way
         for (i, (key_code, _, _constr)) in keys.iter().enumerate() {
-            let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
-            let name = key_types::evdev_keycode_to_name(key_code);
-            let _name = if x11_name.contains("keysym") {
-                name
-            } else if x11_name.trim().len() == 0 {
-                name
-            } else if key_code == &EvdevKeyCode(1) {
-                name
-            } else if key_code == &EvdevKeyCode(14) {
-                name
-            } else if x11_name.len() == 0 {
-                name
-            } else {
-                x11_name
-            };
+            let key_name = app.evdev_x11_tools.get_key_char(key_code, &layer.into());
             let clicks = clicks_vec
                 .iter()
                 .find(|e| e.0 == *key_code)
@@ -232,12 +218,12 @@ pub fn draw_keyboard<B: Backend>(
                 || app.current_keys.contains(key_code);
             if app.get_heatmap() {
                 frame.render_widget(
-                    draw_key_heatmap(_name.as_str(), max_clicks, clicks, highlight),
+                    draw_key_heatmap(key_name.as_str(), max_clicks, clicks, highlight),
                     row[i],
                 )
             } else {
                 frame.render_widget(
-                    draw_key(_name.as_str(), i + indice * 4, clicks, highlight),
+                    draw_key(key_name.as_str(), i + indice * 4, clicks, highlight),
                     row[i],
                 )
             }
