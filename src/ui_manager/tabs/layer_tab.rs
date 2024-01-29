@@ -7,10 +7,11 @@ use crate::{
     key_manager::key_types::Layer,
     ui_manager::{
         app::App,
+        tab_manager::TabManager,
         widgets::{
             bar_graph_keys_widget::draw_bar_graph, keyboard_widget::draw_keyboard,
             layer_choice_widget::draw_text_choice,
-        }, tab_manager::TabManager,
+        },
     },
 };
 
@@ -19,7 +20,7 @@ pub struct LayerTab<'a> {
 }
 // pub fn set_titles(app: &mut App)
 
-impl<'a> LayerTab<'a>{
+impl<'a> LayerTab<'a> {
     pub fn default() -> Self {
         let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];
         Self {
@@ -74,7 +75,19 @@ impl<'a> LayerTab<'a>{
             5 => Layer::Layer4,
             _ => unreachable!(),
         };
-        draw_keyboard(frame, middle_chunks[1], &app, &layer);
+        let clicks_vec = if layer == Layer::AllLayer {
+            app.reader.keys_stats.sorted_clicks_all_layer()
+        } else {
+            app.reader.keys_stats.sorted_clicks(&layer.into())
+        };
+        draw_keyboard(
+            frame,
+            middle_chunks[1],
+            &app,
+            &layer,
+            app.get_heatmap(),
+            clicks_vec,
+        );
         draw_bar_graph(
             frame,
             bottom_chunks[1],

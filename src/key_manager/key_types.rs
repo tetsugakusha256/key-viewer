@@ -17,7 +17,7 @@ pub const LAYER_3: EvdevModMask = EvdevModMask(18);
 pub const LAYER_4: EvdevModMask = EvdevModMask(32);
 pub const LAYER_5: EvdevModMask = EvdevModMask(34);
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum Layer {
     AllLayer,
     Layer0,

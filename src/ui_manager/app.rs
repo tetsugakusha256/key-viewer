@@ -50,7 +50,7 @@ pub struct App<'a> {
 impl<'a> Default for App<'a> {
     fn default() -> Self {
         let reader = KeyReader::new_from_file(
-            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+            "/home/anon/Documents/Code/Key_capture/output.txt".to_string(),
         )
         .unwrap();
         Self {
@@ -103,9 +103,9 @@ impl<'a> App<'a> {
 
     pub fn clicked_keys(&self, layer: &Layer) -> Vec<(EvdevKeyCode, u32)> {
         if layer == &Layer::AllLayer {
-            self.reader.keys_stats.max_clicked_keys_all_layer()
+            self.reader.keys_stats.sorted_clicks_all_layer()
         } else {
-            self.reader.keys_stats.max_clicked_keys(&layer.into())
+            self.reader.keys_stats.sorted_clicks(&layer.into())
         }
     }
     pub fn toggle_heatmap(&mut self) {

@@ -8,7 +8,7 @@ fn main() {
     let mut device = Device::open(path).expect("Failed to create device");
 
     let mut logger = logger::Logger::new(
-        "/home/anon/Documents/Code/RustLearning/key_capture/output_deamon.txt".to_string(),
+        "/home/anon/Documents/Code/Key_capture/output_deamon.txt".to_string(),
     )
     .unwrap();
 

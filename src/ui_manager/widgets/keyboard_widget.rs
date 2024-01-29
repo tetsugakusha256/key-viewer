@@ -9,6 +9,8 @@ pub fn draw_keyboard<B: Backend>(
     area: Rect,
     app: &App,
     layer: &Layer,
+    heatmap: bool,
+    clicks_vec: Vec<(EvdevKeyCode, u32)>,
 ) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
@@ -22,6 +24,7 @@ pub fn draw_keyboard<B: Backend>(
             Min(0), // fills remaining space
         ])
         .split(area);
+
     //TODO: keyboard layout
     // nbr keys per row: 1->17, 2->14, 3->14, 4->14, 5->13, 6->11 , 6½->3
     let keyboard_rows_aa = vec![
@@ -119,109 +122,131 @@ pub fn draw_keyboard<B: Backend>(
         (EvdevKeyCode(110), "Ins", Ratio(2, 36)),
         (EvdevKeyCode(111), "Del", Ratio(3, 36)),
     ];
-    render_single_row(frame, chunks[0], keyboard_rows_fn, app, &layer);
-    render_single_row(
-        frame,
-        chunks[1],
-        keyboard_rows_numbers,
-        app,
-        &layer,
-        
-    );
-    render_single_row(frame, chunks[2], keyboard_rows_ad, app, &layer);
-    render_single_row(frame, chunks[3], keyboard_rows_ac, app, &layer);
-    render_single_row(frame, chunks[4], keyboard_rows_ab, app, &layer);
-    render_single_row(frame, chunks[5], keyboard_rows_aa, app, &layer);
-}
-/// Renders a single example line
-fn render_single_row<B: Backend>(
-    frame: &mut Frame<B>,
-    area: Rect,
-    keys: Vec<(EvdevKeyCode, &str, Constraint)>,
-    app: &App,
-    layer: &Layer,
-) {
-    fn draw_key_heatmap(key_name: &str, max_clicks: u32, clicks: u32) -> Paragraph {
-        // TODO: make something robust (check for edge cases)
-        // FIX: sometime clicks > max_clicks ...
-        // eprintln!("clicks: {}, max_clicks: {}", clicks, max_clicks);
-        let inter = match (22 * clicks).checked_div(max_clicks) {
-            Some(x) => x as u8,
-            None => 0,
-        };
-        let bg_value = inter + 233;
-        let color_bg = Color::Indexed(bg_value);
-        let color_fg = if bg_value > 248 {
-            Color::Indexed(232)
-        } else {
-            Color::Indexed(255)
-        };
-        let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
-        Paragraph::new(text.clone())
-            .alignment(Alignment::Center)
-            .bg(color_bg)
-            .fg(color_fg)
-    }
-    fn draw_key(key_name: &str, rnd: usize, clicks: u32, highlight: bool) -> Paragraph {
-        let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
-        if highlight {
+
+    // Renders a single example line
+    let render_single_row = |frame: &mut Frame<B>,
+                             area: Rect,
+                             keys: Vec<(EvdevKeyCode, &str, Constraint)>,
+                             indice: usize|
+     -> () {
+        fn draw_key_heatmap(
+            key_name: &str,
+            max_clicks: u32,
+            clicks: u32,
+            highlight: bool,
+        ) -> Paragraph {
+            // TODO: make something robust (check for edge cases)
+            // FIX: sometime clicks > max_clicks ...
+            // eprintln!("clicks: {}, max_clicks: {}", clicks, max_clicks);
+            let inter = match (22 * clicks).checked_div(max_clicks) {
+                Some(x) => x as u8,
+                None => 0,
+            };
+            let bg_value = match inter {
+                0..=22 => inter + 233,
+                _ => 52,
+            };
+            let color_bg = if highlight {
+                Color::Red
+            } else {
+                Color::Indexed(bg_value)
+            };
+            let color_fg = if bg_value > 248 {
+                Color::Indexed(232)
+            } else {
+                Color::Indexed(255)
+            };
+            let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
             Paragraph::new(text.clone())
                 .alignment(Alignment::Center)
-                .on_red()
-        } else {
-            if rnd % 2 == 0 {
+                .bg(color_bg)
+                .fg(color_fg)
+        }
+
+        fn draw_key(key_name: &str, rnd: usize, clicks: u32, highlight: bool) -> Paragraph {
+            let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
+            if highlight {
                 Paragraph::new(text.clone())
                     .alignment(Alignment::Center)
-                    .on_black()
+                    .on_red()
             } else {
-                Paragraph::new(text.clone())
-                    .alignment(Alignment::Center)
-                    .on_dark_gray()
+                match rnd % 4 {
+                    0 => Paragraph::new(text.clone())
+                        .alignment(Alignment::Center)
+                        .on_white()
+                        .fg(Color::Black),
+                    1 => Paragraph::new(text.clone())
+                        .alignment(Alignment::Center)
+                        .on_gray()
+                        .fg(Color::Black),
+                    2 => Paragraph::new(text.clone())
+                        .alignment(Alignment::Center)
+                        .on_dark_gray(),
+                    3 => Paragraph::new(text.clone())
+                        .alignment(Alignment::Center)
+                        .on_black(),
+                    _ => Paragraph::new(text.clone())
+                        .alignment(Alignment::Center)
+                        .on_black(),
+                }
             }
         }
-    }
 
-    let row = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
-        .split(area);
-    let mod_mask: EvdevModMask = layer.into();
-    let max_clicks = if layer == &Layer::AllLayer {
-        app.reader.keys_stats.max_clicked_keys_all_layer()
-    } else {
-        app.reader.keys_stats.max_clicked_keys(&mod_mask)
-    };
-    let max_clicks = max_clicks.get(0).unwrap_or(&(EvdevKeyCode(0), 0)).1;
-    //TODO: Manage key_name in a more coherant way
-    for (i, (key_code, _, _constr)) in keys.iter().enumerate() {
-        let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
-        let name = key_types::evdev_keycode_to_name(key_code);
-        let _name = if x11_name.contains("keysym") {
-            name
-        } else if x11_name.trim().len() == 0 {
-            name
-        } else if key_code == &EvdevKeyCode(1) {
-            name
-        } else if key_code == &EvdevKeyCode(14) {
-            name
-        } else if x11_name.len() == 0 {
-            name
-        } else {
-            x11_name
-        };
-        if app.get_heatmap() {
-            frame.render_widget(
-                draw_key_heatmap(_name.as_str(), max_clicks, app.clicks(key_code, layer)),
-                row[i],
-            )
-        } else {
+        let row = Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
+            .split(area);
+        let mod_mask: EvdevModMask = layer.into();
+        let mut sorted_clicks_vec = clicks_vec.clone();
+        sorted_clicks_vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
+        // let max_clicks_vec = if layer == &Layer::AllLayer {
+        //     app.reader.keys_stats.sorted_clicks_all_layer()
+        // } else {
+        //     app.reader.keys_stats.sorted_clicks(&mod_mask)
+        // };
+        let max_clicks = sorted_clicks_vec.get(1).unwrap_or(&(EvdevKeyCode(0), 0)).1;
+        //TODO: Manage key_name in a more coherant way
+        for (i, (key_code, _, _constr)) in keys.iter().enumerate() {
+            let x11_name = app.evdev_x11_tools.get_x11_char(key_code, &layer.into());
+            let name = key_types::evdev_keycode_to_name(key_code);
+            let _name = if x11_name.contains("keysym") {
+                name
+            } else if x11_name.trim().len() == 0 {
+                name
+            } else if key_code == &EvdevKeyCode(1) {
+                name
+            } else if key_code == &EvdevKeyCode(14) {
+                name
+            } else if x11_name.len() == 0 {
+                name
+            } else {
+                x11_name
+            };
+            let clicks = clicks_vec
+                .iter()
+                .find(|e| e.0 == *key_code)
+                .unwrap_or(&(*key_code, 0))
+                .1;
             let highlight = app.selected_key == *key_code
                 && app.get_current_mode() == &Mode::OneKeyMode
                 || app.current_keys.contains(key_code);
-            frame.render_widget(
-                draw_key(_name.as_str(), i, app.clicks(key_code, layer), highlight),
-                row[i],
-            )
+            if app.get_heatmap() {
+                frame.render_widget(
+                    draw_key_heatmap(_name.as_str(), max_clicks, clicks, highlight),
+                    row[i],
+                )
+            } else {
+                frame.render_widget(
+                    draw_key(_name.as_str(), i + indice * 4, clicks, highlight),
+                    row[i],
+                )
+            }
         }
-    }
+    };
+    render_single_row(frame, chunks[0], keyboard_rows_fn, 0);
+    render_single_row(frame, chunks[1], keyboard_rows_numbers, 1);
+    render_single_row(frame, chunks[2], keyboard_rows_ad, 2);
+    render_single_row(frame, chunks[3], keyboard_rows_ac, 3);
+    render_single_row(frame, chunks[4], keyboard_rows_ab, 4);
+    render_single_row(frame, chunks[5], keyboard_rows_aa, 5);
 }

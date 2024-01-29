@@ -77,7 +77,7 @@ impl KeysStats {
         vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
         vec
     }
-    pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
+    pub fn sorted_clicks_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
         let mut vec = Vec::new();
         for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
             let mut total_clicks = 0;
@@ -90,7 +90,7 @@ impl KeysStats {
         vec
     }
     /// Get a sorted vec with key from the most clicked to the least clicked
-    pub fn max_clicked_keys(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
+    pub fn sorted_clicks(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
         let mut vec = Vec::new();
         for (key_code, mod_key_hashmap) in self.keys_pressed_stats.iter() {
             for (_mod_mask, clicks) in mod_key_hashmap.iter() {
@@ -219,11 +219,11 @@ impl KeysManager {
         self.keys_stats.keys_clicked_after_key(first_key)
     }
     pub fn max_clicked_keys_all_layer(&self) -> Vec<(EvdevKeyCode, u32)> {
-        self.keys_stats.max_clicked_keys_all_layer()
+        self.keys_stats.sorted_clicks_all_layer()
     }
     /// Get a sorted vec with key from the most clicked to the least clicked
     pub fn max_clicked_keys(&self, mod_mask: &EvdevModMask) -> Vec<(EvdevKeyCode, u32)> {
-        self.keys_stats.max_clicked_keys(mod_mask)
+        self.keys_stats.sorted_clicks(mod_mask)
     }
     /// Get all clicks mod independent
     pub fn all_clicks(&self, key_code: &EvdevKeyCode) -> u32 {

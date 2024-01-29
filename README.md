@@ -152,6 +152,11 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
+
+* [ratatui](https://github.com/ratatui-org/ratatui)
+* [vim](https://github.com/vim/vim)
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/tetsugakusha256/key-viewer.svg?style=for-the-badge

@@ -86,7 +86,12 @@ impl<'a> OneKeyTab<'a> {
             1 => Layer::Layer0,
             _ => unreachable!(),
         };
-        draw_keyboard(frame, middle_chunks[1], &app, &layer);
+        let clicks_vec = if self.tab.index == 0 {
+            app.reader.keys_stats.keys_clicked_after_key(&app.selected_key)
+        } else {
+            app.reader.keys_stats.keys_clicked_before_key(&app.selected_key)
+        };
+        draw_keyboard(frame, middle_chunks[1], &app, &layer, false, clicks_vec);
         draw_bar_graph_horiz(
             frame,
             bottom_chunks[1],
