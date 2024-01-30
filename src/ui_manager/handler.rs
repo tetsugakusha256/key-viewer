@@ -72,7 +72,7 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
             '9' => EvdevKeyCode(10),
             '0' => EvdevKeyCode(11),
             '-' => EvdevKeyCode(12),
-            '|' => EvdevKeyCode(13),
+            // '=' => EvdevKeyCode(13),
             '`' => EvdevKeyCode(41),
             _ => EvdevKeyCode(1),
         },

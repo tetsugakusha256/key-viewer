@@ -1,4 +1,4 @@
-use crate::{key_manager::key_types::{self, EvdevKeyCode, Layer}, ui_manager::app::App};
+use crate::{key_manager::key_types::{EvdevKeyCode, Layer}, ui_manager::app::App};
 
 use tui::{prelude::*, widgets::*};
 pub fn draw_bar_graph<B: Backend>(

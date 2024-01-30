@@ -85,7 +85,7 @@ impl<'a> LayerTab<'a> {
             middle_chunks[1],
             &app,
             &layer,
-            app.get_heatmap(),
+            app.is_heatmap_on(),
             clicks_vec,
         );
         draw_bar_graph(

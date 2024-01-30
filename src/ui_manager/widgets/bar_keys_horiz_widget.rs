@@ -1,5 +1,5 @@
 use crate::{
-    key_manager::key_types::{self, EvdevKeyCode, Layer},
+    key_manager::key_types::{EvdevKeyCode, Layer},
     ui_manager::app::App,
 };
 

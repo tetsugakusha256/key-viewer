@@ -69,24 +69,38 @@ impl EvdevX11Converter {
         text
     }
     // Return the char or key name of the key given a certain layer(mod_mask) for the current
-    // layout(keymap)
+    // layout()
     pub fn get_key_char(&self, keycode: &EvdevKeyCode, mod_mask: &EvdevModMask) -> String {
         let key_code_string = self.get_x11_char(&keycode, mod_mask);
         let name = key_types::evdev_keycode_to_name(&keycode);
+
         // Renaming some keys that x11 don't return correctly
-        let _name = if key_code_string.contains("keysym") {
-            name
-        } else if key_code_string.trim().len() == 0 {
+        let _name = match key_code_string.as_str() {
+            "No keysym" | "TAB" | "LALT" | "I151" | "LCTL" | "LWIN" | "RALT" | "PRSC" | "RCTL"
+            | "PGUP" | "PGDN" | "HOME" | "END" | "INS" => name.clone(),
+            _ => key_code_string,
+        };
+        // FIX: dead accent not showing
+        let __name = match _name.as_str() {
+            "LFSH" => "LShift".to_string(),
+            "RTSH" => "RShift".to_string(),
+            "AD01" => "`".to_string(),
+            "AD05" => "´".to_string(),
+            "AB01" => "^".to_string(),
+            _ => _name,
+        };
+        let ___name = if __name.trim().len() == 0 {
             name
         } else if *keycode == EvdevKeyCode(1) {
             name
         } else if *keycode == EvdevKeyCode(14) {
             name
-        } else if key_code_string.len() == 0 {
+        } else if *keycode == EvdevKeyCode(111) {
             name
         } else {
-            key_code_string
+            __name.clone()
         };
-        _name
+
+        ___name
     }
 }

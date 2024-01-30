@@ -7,6 +7,8 @@ use tui::backend::CrosstermBackend;
 use tui::Terminal;
 
 fn main() -> AppResult<()> {
+    // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES);
+    // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::REPORT_ALL_KEYS_AS_ESCAPE_CODES);
     // Create an application.
     let mut app = App::new();
 
@@ -14,7 +16,7 @@ fn main() -> AppResult<()> {
     // or find a way to make it so that I don't need the sudo command
     // let device_path = "/dev/input/event16"; // Replace X with the appropriate event number
     // let mut device = Device::open(device_path).expect("Failed to create device");
-    
+
     // Initialize the terminal user interface.
     let backend = CrosstermBackend::new(io::stderr());
     let terminal = Terminal::new(backend)?;

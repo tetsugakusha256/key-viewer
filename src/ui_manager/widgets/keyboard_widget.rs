@@ -9,7 +9,7 @@ pub fn draw_keyboard<B: Backend>(
     area: Rect,
     app: &App,
     layer: &Layer,
-    heatmap: bool,
+    _heatmap: bool,
     clicks_vec: Vec<(EvdevKeyCode, u32)>,
 ) {
     let chunks = Layout::default()
@@ -196,7 +196,7 @@ pub fn draw_keyboard<B: Backend>(
             .direction(Direction::Horizontal)
             .constraints::<Vec<Constraint>>(keys.iter().map(|t| t.2).collect())
             .split(area);
-        let mod_mask: EvdevModMask = layer.into();
+        let _mod_mask: EvdevModMask = layer.into();
         let mut sorted_clicks_vec = clicks_vec.clone();
         sorted_clicks_vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
         // let max_clicks_vec = if layer == &Layer::AllLayer {
@@ -216,7 +216,7 @@ pub fn draw_keyboard<B: Backend>(
             let highlight = app.selected_key == *key_code
                 && app.get_current_mode() == &Mode::OneKeyMode
                 || app.current_keys.contains(key_code);
-            if app.get_heatmap() {
+            if app.is_heatmap_on() {
                 frame.render_widget(
                     draw_key_heatmap(key_name.as_str(), max_clicks, clicks, highlight),
                     row[i],

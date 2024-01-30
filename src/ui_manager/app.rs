@@ -81,7 +81,7 @@ impl<'a> App<'a> {
     }
     pub fn refresh_data(&mut self) {
         let reader = KeyReader::new_from_file(
-            "/home/anon/Documents/Code/RustLearning/key_capture/output.txt".to_string(),
+            "/home/anon/Documents/Code/Key_capture/output.txt".to_string(),
         )
         .unwrap();
         self.reader = reader;
@@ -114,7 +114,7 @@ impl<'a> App<'a> {
     pub fn toggle_help(&mut self) {
         self.help_on = !self.help_on
     }
-    pub fn get_heatmap(&self) -> bool {
+    pub fn is_heatmap_on(&self) -> bool {
         self.heatmap_on
     }
     pub fn get_current_mode(&self) -> &Mode {
