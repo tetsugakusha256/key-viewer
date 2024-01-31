@@ -7,7 +7,7 @@ use tui::{
 };
 
 use crate::ui_manager::app::App;
-use crate::ui_manager::app::Mode;
+use crate::ui_manager::app::TabMode;
 
 use super::widgets::show_info_widget::draw as draw_info;
 
@@ -17,8 +17,8 @@ use super::widgets::show_info_widget::draw as draw_info;
 pub fn render<B: Backend>(app: &mut App, frame: &mut Frame<'_, B>) {
     let size = frame.size();
     match app.get_current_mode(){
-        Mode::LayerMode => app.layer_tab.draw(app, size, frame),
-        Mode::OneKeyMode => app.one_key_tab.draw(app, size, frame),
+        TabMode::LayerMode => app.layer_tab.draw(app, size, frame),
+        TabMode::OneKeyMode => app.one_key_tab.draw(app, size, frame),
     }
     if app.help_on {
         let area = centered_rect(60, 60, size);

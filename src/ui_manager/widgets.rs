@@ -4,3 +4,4 @@ pub mod show_info_widget;
 pub mod layer_choice_widget;
 pub mod one_key_info_widget;
 pub mod bar_keys_horiz_widget;
+pub mod tab_list_widget;

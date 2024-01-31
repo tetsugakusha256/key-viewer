@@ -10,7 +10,7 @@ use crate::{
         tab_manager::TabManager,
         widgets::{
             bar_graph_keys_widget::draw_bar_graph, keyboard_widget::draw_keyboard,
-            layer_choice_widget::draw_text_choice,
+            layer_choice_widget::draw_text_choice, tab_list_widget::draw_tab_list,
         },
     },
 };
@@ -63,10 +63,15 @@ impl<'a> LayerTab<'a> {
             )
             .split(chunks[2]);
 
-        draw_text_choice(frame, chunks[0], &self.tab.index, &self.tab.titles);
+        draw_text_choice(
+            frame,
+            chunks[0],
+            &self.tab.current_index(),
+            &self.tab.titles(),
+        );
 
         //TODO: make this more idiomatic draw_all(index)
-        let layer = match &self.tab.index {
+        let layer = match &self.tab.current_index() {
             0 => Layer::AllLayer,
             1 => Layer::Layer0,
             2 => Layer::Layer1,
@@ -89,6 +94,7 @@ impl<'a> LayerTab<'a> {
             app.is_heatmap_on(),
             clicks_vec,
         );
+        draw_tab_list(frame, middle_chunks[2], &app);
         draw_bar_graph(
             frame,
             bottom_chunks[1],

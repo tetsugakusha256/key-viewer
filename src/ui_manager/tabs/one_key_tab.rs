@@ -14,7 +14,7 @@ use crate::{
         widgets::{
             bar_keys_horiz_widget::draw_bar_graph_horiz,
             keyboard_widget::draw_keyboard, layer_choice_widget::draw_text_choice,
-            one_key_info_widget::draw_one_key_info,
+            one_key_info_widget::draw_one_key_info, tab_list_widget::draw_tab_list,
         },
     },
 };
@@ -71,7 +71,7 @@ impl<'a> OneKeyTab<'a> {
             )
             .split(chunks[2]);
 
-        draw_text_choice(frame, chunks[0], &self.tab.index, &self.tab.titles);
+        draw_text_choice(frame, chunks[0], &self.tab.current_index(), &self.tab.titles());
         draw_one_key_info(frame, bottom_chunks[3], app);
 
         let name = key_types::evdev_keycode_to_name(&app.selected_key);
@@ -81,17 +81,18 @@ impl<'a> OneKeyTab<'a> {
             .style(Style::default().fg(Color::Gray));
         frame.render_widget(paragraph, chunks[0]);
         //TODO: make this more idiomatic draw_all(index)
-        let layer = match &self.tab.index {
+        let layer = match &self.tab.current_index() {
             0 => Layer::AllLayer,
             1 => Layer::Layer0,
             _ => unreachable!(),
         };
-        let clicks_vec = if self.tab.index == 0 {
+        let clicks_vec = if self.tab.current_index() == 0 {
             app.reader.keys_stats.keys_clicked_before_key(&app.selected_key)
         } else {
             app.reader.keys_stats.keys_clicked_after_key(&app.selected_key)
         };
         draw_keyboard(frame, middle_chunks[1], &app, &layer, false, clicks_vec);
+        draw_tab_list(frame, middle_chunks[2], &app);
         draw_bar_graph_horiz(
             frame,
             bottom_chunks[1],

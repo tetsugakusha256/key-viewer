@@ -1,6 +1,6 @@
 use crate::{
     key_manager::key_types::{EvdevKeyCode, EvdevModMask, Layer},
-    ui_manager::app::{App, Mode},
+    ui_manager::app::{App, TabMode},
 };
 use tui::{layout::Constraint::*, prelude::*, widgets::*};
 
@@ -216,7 +216,7 @@ pub fn draw_keyboard<B: Backend>(
                 .unwrap_or(&(*key_code, 0))
                 .1;
             let highlight = app.selected_key == *key_code
-                && app.get_current_mode() == &Mode::OneKeyMode
+                && app.get_current_mode() == TabMode::OneKeyMode
                 || app.current_keys.contains(key_code);
             if app.is_heatmap_on() {
                 frame.render_widget(

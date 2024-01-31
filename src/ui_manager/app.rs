@@ -7,6 +7,7 @@ use crate::{
     },
     key_reader::KeyReader,
 };
+use core::fmt;
 use std::error;
 
 use super::{
@@ -15,9 +16,23 @@ use super::{
 };
 /// List of Tab (View)
 #[derive(PartialEq)]
-pub enum Mode {
+pub enum TabMode {
     LayerMode,
     OneKeyMode,
+}
+impl TabMode {
+    pub fn all_tabmode_str() -> Vec<&'static str> {
+        vec!["1", "2"]
+    }
+}
+impl fmt::Display for TabMode {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let str = match *self {
+            TabMode::LayerMode => "Layer Mode",
+            TabMode::OneKeyMode => "One key mode",
+        };
+        writeln!(f, "{}", str)
+    }
 }
 /// Application result type.
 pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
@@ -30,7 +45,7 @@ pub struct App<'a> {
     /// Is the application running?
     pub running: bool,
     /// tabs titles
-    tab: TabManager<'a>,
+    pub tab: TabManager<'a>,
     pub one_key_tab: OneKeyTab<'a>,
     pub layer_tab: LayerTab<'a>,
     pub heatmap_on: bool,
@@ -117,12 +132,8 @@ impl<'a> App<'a> {
     pub fn is_heatmap_on(&self) -> bool {
         self.heatmap_on
     }
-    pub fn get_current_mode(&self) -> &Mode {
-        match self.tab.index {
-            0 => &Mode::LayerMode,
-            1 => &Mode::OneKeyMode,
-            _ => unreachable!(),
-        }
+    pub fn get_current_mode(&self) -> TabMode {
+        self.tab.current_tab()
     }
     /// Handles the tick event of the terminal.
     pub fn tick(&self) {}
@@ -133,21 +144,27 @@ impl<'a> App<'a> {
     }
     pub fn inner_next(&mut self) {
         match self.get_current_mode() {
-            Mode::LayerMode => self.layer_tab.tab.next(),
-            Mode::OneKeyMode => self.one_key_tab.tab.next(),
+            TabMode::LayerMode => self.layer_tab.tab.next(),
+            TabMode::OneKeyMode => self.one_key_tab.tab.next(),
         }
     }
     pub fn inner_previous(&mut self) {
         match self.get_current_mode() {
-            Mode::LayerMode => self.layer_tab.tab.previous(),
-            Mode::OneKeyMode => self.one_key_tab.tab.previous(),
+            TabMode::LayerMode => self.layer_tab.tab.previous(),
+            TabMode::OneKeyMode => self.one_key_tab.tab.previous(),
         }
     }
+    pub fn next_tab(&mut self) {
+        self.tab.next()
+    }
+    pub fn prev_tab(&mut self) {
+        self.tab.previous()
+    }
     pub fn set_layer_mode(&mut self) {
-        self.tab.index = 0;
+        self.tab.go_to_tab(0)
     }
     pub fn set_one_key_mode(&mut self) {
-        self.tab.index = 1;
+        self.tab.go_to_tab(1)
     }
     pub fn toggle_select_key_mode(&mut self) {
         self.select_key_mode = !self.select_key_mode;
