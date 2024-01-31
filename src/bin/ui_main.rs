@@ -11,7 +11,7 @@ fn main() -> AppResult<()> {
     // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES);
     // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::REPORT_ALL_KEYS_AS_ESCAPE_CODES);
     
-    let config = load_config();
+    let _config = load_config();
     // Create an application.
     let mut app = App::new();
 

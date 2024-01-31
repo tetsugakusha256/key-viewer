@@ -11,7 +11,7 @@ pub struct PhysicalLayout {
 }
 
 impl From<Vec<Vec<usize>>> for PhysicalLayout {
-    fn from(val: Vec<Vec<usize>>) -> PhysicalLayout {
+    fn from(_val: Vec<Vec<usize>>) -> PhysicalLayout {
 
         PhysicalLayout {
             rows: vec![PhysicalRow {

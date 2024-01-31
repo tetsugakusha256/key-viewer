@@ -2,14 +2,14 @@ extern crate evdev;
 
 use std::time::Instant;
 
-use chrono::Local;
+
 use evdev::{Device, EventType, Key};
 use key_capture::{
     config_manager::config_type::load_config, key_manager::key_types::EvdevKeyCode, logs::logger,
 };
 
 fn main() {
-    let config = load_config();
+    let _config = load_config();
     let path = "/dev/input/event16"; // Replace X with the appropriate event number
     let mut device = Device::open(path).expect("Failed to create device");
 

@@ -1,4 +1,4 @@
-use chrono::{Local, NaiveDate};
+use chrono::{Local};
 
 use crate::{
     error_type::Errors,
@@ -8,8 +8,8 @@ use crate::{
     },
 };
 use std::{
-    fs::{File, OpenOptions},
-    io::{Read, Write},
+    fs::{File},
+    io::{Write},
 };
 
 use super::log_types::OnDiskData;
@@ -33,7 +33,7 @@ impl Logger {
         let path = "/home/anon/Documents/Code/Key_capture/deamon_logging/".to_string()
             + &date
             + "-log.txt";
-        let mut keys_manager = KeysStatsManager::new();
+        let keys_manager = KeysStatsManager::new();
 
         // Try to open the file
         Ok(Logger {
