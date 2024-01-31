@@ -135,32 +135,39 @@ pub fn draw_keyboard<B: Backend>(
             clicks: u32,
             highlight: bool,
         ) -> Paragraph {
-            // TODO: make something robust (check for edge cases)
-            // FIX: sometime clicks > max_clicks ...
-            // eprintln!("clicks: {}, max_clicks: {}", clicks, max_clicks);
-            let inter = match (22 * clicks).checked_div(max_clicks) {
-                Some(x) => x as u8,
-                None => 0,
-            };
-            let bg_value = match inter {
-                0..=22 => inter + 233,
-                _ => 52,
-            };
-            let color_bg = if highlight {
-                Color::Red
-            } else {
-                Color::Indexed(bg_value)
-            };
-            let color_fg = if bg_value > 248 {
-                Color::Indexed(232)
-            } else {
-                Color::Indexed(255)
-            };
             let text = vec![Line::from(key_name.clone()), Line::from(clicks.to_string())];
-            Paragraph::new(text.clone())
-                .alignment(Alignment::Center)
-                .bg(color_bg)
-                .fg(color_fg)
+
+            if highlight {
+                Paragraph::new(text.clone())
+                    .alignment(Alignment::Center)
+                    .on_red()
+            } else {
+                // TODO: make something robust (check for edge cases)
+                // FIX: sometime clicks > max_clicks ...
+                // eprintln!("clicks: {}, max_clicks: {}", clicks, max_clicks);
+                let inter = match (22 * clicks).checked_div(max_clicks) {
+                    Some(x) => x as u8,
+                    None => 0,
+                };
+                let bg_value = match inter {
+                    0..=22 => inter + 233,
+                    _ => 52,
+                };
+                let color_bg = if highlight {
+                    Color::Red
+                } else {
+                    Color::Indexed(bg_value)
+                };
+                let color_fg = if bg_value > 248 {
+                    Color::Indexed(232)
+                } else {
+                    Color::Indexed(255)
+                };
+                Paragraph::new(text.clone())
+                    .alignment(Alignment::Center)
+                    .bg(color_bg)
+                    .fg(color_fg)
+            }
         }
 
         fn draw_key(key_name: &str, rnd: usize, clicks: u32, highlight: bool) -> Paragraph {
@@ -199,11 +206,6 @@ pub fn draw_keyboard<B: Backend>(
         let _mod_mask: EvdevModMask = layer.into();
         let mut sorted_clicks_vec = clicks_vec.clone();
         sorted_clicks_vec.sort_by(|(_, clicks_0), (_, clicks_1)| clicks_1.cmp(clicks_0));
-        // let max_clicks_vec = if layer == &Layer::AllLayer {
-        //     app.reader.keys_stats.sorted_clicks_all_layer()
-        // } else {
-        //     app.reader.keys_stats.sorted_clicks(&mod_mask)
-        // };
         let max_clicks = sorted_clicks_vec.get(1).unwrap_or(&(EvdevKeyCode(0), 0)).1;
         //TODO: Manage key_name in a more coherant way
         for (i, (key_code, _, _constr)) in keys.iter().enumerate() {

@@ -1,3 +1,4 @@
+use key_capture::config_manager::config_type::load_config;
 use key_capture::ui_manager::app::{App, AppResult};
 use key_capture::ui_manager::event::{Event, EventHandler};
 use key_capture::ui_manager::handler::handle_key_events;
@@ -9,6 +10,8 @@ use tui::Terminal;
 fn main() -> AppResult<()> {
     // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES);
     // PushKeyboardEnhancementFlags(KeyboardEnhancementFlags::REPORT_ALL_KEYS_AS_ESCAPE_CODES);
+    
+    let config = load_config();
     // Create an application.
     let mut app = App::new();
 

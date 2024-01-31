@@ -26,7 +26,7 @@ pub struct OneKeyTab<'a> {
 
 impl<'a> OneKeyTab<'a> {
     pub fn default() -> Self {
-        let layout_str = vec!["Key pressed after", "Key pressed before"];
+        let layout_str = vec!["Key pressed before", "Key pressed after"];
         Self {
             tab: TabManager::new(layout_str),
         }
@@ -87,9 +87,9 @@ impl<'a> OneKeyTab<'a> {
             _ => unreachable!(),
         };
         let clicks_vec = if self.tab.index == 0 {
-            app.reader.keys_stats.keys_clicked_after_key(&app.selected_key)
-        } else {
             app.reader.keys_stats.keys_clicked_before_key(&app.selected_key)
+        } else {
+            app.reader.keys_stats.keys_clicked_after_key(&app.selected_key)
         };
         draw_keyboard(frame, middle_chunks[1], &app, &layer, false, clicks_vec);
         draw_bar_graph_horiz(

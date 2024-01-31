@@ -5,6 +5,38 @@ use crate::{
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use crossterm::event::ModifierKeyCode::*;
 
+pub enum MappableAction {
+    NextTab,
+    PrevTab,
+    NextLayer,
+    PrevLayer,
+    SelectKeyMode,
+    ToggleHeatmap,
+    ShowOneKeyWindow,
+    ShowLayerWindow,
+    ToggleHelp,
+    RefreshData,
+    Quit,
+}
+impl From<String> for MappableAction {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "NextTab" => MappableAction::NextTab,
+            "PrevTab" => MappableAction::PrevTab,
+            "NextLayer" => MappableAction::NextLayer,
+            "PrevLayer" => MappableAction::PrevLayer,
+            "SelectKeyMode" => MappableAction::SelectKeyMode,
+            "ToggleHeatmap" => MappableAction::ToggleHeatmap,
+            "ShowOneKeyWindow" => MappableAction::ShowOneKeyWindow,
+            "ShowLayerWindow" => MappableAction::ShowLayerWindow,
+            "ToggleHelp" => MappableAction::ToggleHelp,
+            "RefreshData" => MappableAction::RefreshData,
+            "Quit" => MappableAction::Quit,
+            _ => panic!("Not a valid MapableAction")
+        }
+    }
+}
+
 /// Handles the key events and updates the state of [`App`].
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     let evdev_key_code = match key_event.code {
@@ -132,14 +164,14 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
             KeyCode::Char('?') => app.toggle_help(),
             KeyCode::Char('r') => app.refresh_data(),
             KeyCode::Insert => app.refresh_data(),
-            KeyCode::Char('n') => {
-                app.vertical_scroll = app.vertical_scroll.saturating_add(1);
-                app.vertical_scroll_state = app.vertical_scroll_state.position(app.vertical_scroll);
-            }
-            KeyCode::Char('e') => {
-                app.vertical_scroll = app.vertical_scroll.saturating_sub(1);
-                app.vertical_scroll_state = app.vertical_scroll_state.position(app.vertical_scroll);
-            }
+            // KeyCode::Char('n') => {
+            //     app.vertical_scroll = app.vertical_scroll.saturating_add(1);
+            //     app.vertical_scroll_state = app.vertical_scroll_state.position(app.vertical_scroll);
+            // }
+            // KeyCode::Char('e') => {
+            //     app.vertical_scroll = app.vertical_scroll.saturating_sub(1);
+            //     app.vertical_scroll_state = app.vertical_scroll_state.position(app.vertical_scroll);
+            // }
             // Exit application on `ESC` or `q`
             KeyCode::Esc | KeyCode::Char('q') => app.quit(),
 

@@ -6,3 +6,4 @@ pub mod handler;
 pub mod widgets;
 pub mod tabs;
 pub mod tab_manager;
+pub mod types;

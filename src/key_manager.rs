@@ -171,23 +171,23 @@ impl KeysStats {
 #[derive(Debug)]
 // TODO: extract the keys_pressed_stats and keys_duo_stats in it's own struct
 /// X11 agnostic, only works with evdev value
-pub struct KeysManager {
+pub struct KeysStatsManager {
     current_keys: KeystateMemory,
     pub keys_stats: KeysStats,
     /// Store second key -> first key
     // keys_duo_stats_rev: HashMap<EvdevKeyCode, HashMap<EvdevKeyCode, u32>>,
     keys_history: VecDeque<EvdevKeyCode>,
 }
-impl fmt::Display for KeysManager {
+impl fmt::Display for KeysStatsManager {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let formatted_string = format!("{:#?}", &self.all_keys_stats_vec());
         writeln!(f, "Stats: {}", formatted_string)
     }
 }
 #[allow(dead_code)]
-impl KeysManager {
-    pub fn new() -> KeysManager {
-        KeysManager {
+impl KeysStatsManager {
+    pub fn new() -> KeysStatsManager {
+        KeysStatsManager {
             current_keys: KeystateMemory::new(),
             keys_stats: KeysStats::new(),
             keys_history: VecDeque::with_capacity(MAX_KEYS_CHAIN),

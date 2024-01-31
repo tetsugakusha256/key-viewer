@@ -1,77 +1,54 @@
+use chrono::{Local, NaiveDate};
+
 use crate::{
     error_type::Errors,
-    key_manager::{evdev_x11_tools::EvdevX11Converter, KeysManager},
+    key_manager::{evdev_x11_tools::EvdevX11Converter, KeysStatsManager},
     key_manager::{
         key_types::{EvdevKeyCode, EvdevModMask},
-        KeysStats,
     },
 };
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::{Read, Write},
 };
 
-#[derive(serde::Deserialize, serde::Serialize, Clone)]
-pub struct OnDiskData {
-    pub keys_stats: KeysStats,
-}
-impl OnDiskData {
-    pub fn new(keys_stats: KeysStats) -> OnDiskData {
-        OnDiskData { keys_stats }
-    }
-    /// Load data from disk
-    pub fn new_from_disk(file: &mut File) -> Result<OnDiskData, Errors> {
-        let mut content = String::new();
-        file.read_to_string(&mut content)?;
-        let deserialized: OnDiskData = serde_json::from_str(&content)?;
-        Ok(deserialized)
-    }
-}
+use super::log_types::OnDiskData;
+
 /// Owns a keysmanager and a converter and manage the logging
+/// Manages a single day at a time of logs, able to add key one by one
+/// To be used for logging
 #[allow(dead_code)]
 pub struct Logger {
-    file: File,
+    file: Option<File>,
     path: String,
-    keys_manager: KeysManager,
+    date: String,
+    keys_manager: KeysStatsManager,
     evdev_converter: EvdevX11Converter,
 }
 #[allow(dead_code)]
 impl Logger {
-    pub fn new(path: String) -> Result<Logger, Errors> {
-        let file = File::create(&path)?;
-        let keys_pressed = KeysManager::new();
+    pub fn new() -> Result<Logger, Errors> {
+        // Format the date and time as a string
+        let date = Local::now().format("%Y-%m-%d").to_string();
+        let path = "/home/anon/Documents/Code/Key_capture/deamon_logging/".to_string()
+            + &date
+            + "-log.txt";
+        let mut keys_manager = KeysStatsManager::new();
+
+        // Try to open the file
         Ok(Logger {
-            file,
-            keys_manager: keys_pressed,
+            file: None,
+            date: date.to_string(),
+            keys_manager,
             path,
             evdev_converter: EvdevX11Converter::new("cuco"),
         })
     }
-    pub fn new_from_file(path: String) -> Result<Logger, Errors> {
-        let mut file = File::open(&path)?;
-        let keys_pressed = KeysManager::new();
-        let res = OnDiskData::new_from_disk(&mut file);
-        match res {
-            Ok(on_disk_data) => {
-                let mut logger = Logger {
-                    file,
-                    keys_manager: keys_pressed,
-                    path: path.clone(),
-                    evdev_converter: EvdevX11Converter::new("cuco"),
-                };
-                logger.keys_manager.keys_stats = on_disk_data.keys_stats;
-                return Ok(logger);
-            }
-            Err(_) => return Logger::new(path),
-        }
-    }
-
     pub fn send_key(&mut self, code: &EvdevKeyCode, value: &i32) -> () {
         self.keys_manager.receive_keyevent(&code, &value);
     }
 
     pub fn log_key_data(&mut self) -> Result<(), Errors> {
-        self.file = File::create(&self.path)?;
         self.save_to_disk()
     }
 
@@ -124,21 +101,23 @@ impl Logger {
 
         text
     }
-    /// Save data to disk
-    fn save_to_disk(&self) -> Result<(), Errors> {
-        //TODO: how to remove clone here?
+    /// Save data to disk with detection of new day
+    fn save_to_disk(&mut self) -> Result<(), Errors> {
+
         let data_to_save = OnDiskData::new(self.keys_manager.keys_stats.clone());
         let serialized = serde_json::to_string(&data_to_save)?;
-        let _ = self.write_in_log(&serialized);
-        Ok(())
-    }
+        self.file = Some(File::create(&self.path)?);
+        writeln!(self.file.as_ref().unwrap(), "{}", &serialized)?;
 
-    fn write_in_log<T: std::fmt::Display>(&self, text: &T) -> Result<(), Errors> {
-        writeln!(&self.file, "{}", text)?;
+        let today_date = Local::now().format("%Y-%m-%d").to_string();
+        // If the day changed, start a new file with new data for the next time
+        if today_date != self.date {
+            self.path = "/home/anon/Documents/Code/Key_capture/deamon_logging/".to_string()
+                + &today_date
+                + "-log.txt";
+            self.date = today_date;
+            self.keys_manager = KeysStatsManager::new();
+        }
         Ok(())
     }
-    // fn write_in_file(&self, text: &str) -> Result<(), Errors> {
-    //     writeln!(&self.file, "{}", text)?;
-    //     Ok(())
-    // }
 }

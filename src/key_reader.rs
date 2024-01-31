@@ -5,7 +5,7 @@ use crate::{
     key_manager::{key_types::EvdevKeyCode, KeysStats},
     key_manager::{
         evdev_x11_tools::EvdevX11Converter, keystate_memory::KeystateMemory,
-    }, logger::OnDiskData,
+    }, logs::log_types::OnDiskData, 
 };
 
 /// Owns a keysmanager and a converter and manage the logging
