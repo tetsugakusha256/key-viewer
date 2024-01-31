@@ -10,12 +10,27 @@ pub const KEY_RIGHTCTRL: EvdevKeyCode = EvdevKeyCode(Key::KEY_RIGHTCTRL.code());
 pub const KEY_RIGHTSHIFT: EvdevKeyCode = EvdevKeyCode(Key::KEY_RIGHTSHIFT.code());
 pub const KEY_ISO3: EvdevKeyCode = EvdevKeyCode(Key::KEY_RIGHTALT.code());
 pub const KEY_ISO5: EvdevKeyCode = EvdevKeyCode(Key::KEY_PRINT.code());
+// layer 0=0, 1= 2 or 64, 2 = 16, 3=18 or 80, 4=32, 5=34 or 96, 6=8 or 128
+// Base
 pub const LAYER_0: EvdevModMask = EvdevModMask(0);
+// Shift
 pub const LAYER_1: EvdevModMask = EvdevModMask(2);
+// ISO_3
 pub const LAYER_2: EvdevModMask = EvdevModMask(16);
+// Shift ISO_3
 pub const LAYER_3: EvdevModMask = EvdevModMask(18);
+// ISO_5
 pub const LAYER_4: EvdevModMask = EvdevModMask(32);
+// Shift ISO_5
 pub const LAYER_5: EvdevModMask = EvdevModMask(34);
+// Ctrl
+pub const LAYER_6: EvdevModMask = EvdevModMask(8);
+// Ctrl + Shift
+pub const LAYER_7: EvdevModMask = EvdevModMask(10);
+// Alt
+pub const LAYER_8: EvdevModMask = EvdevModMask(1);
+// Alt + Shift
+pub const LAYER_9: EvdevModMask = EvdevModMask(3);
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum Layer {
@@ -26,10 +41,14 @@ pub enum Layer {
     Layer3,
     Layer4,
     Layer5,
+    Layer6,
+    Layer7,
+    Layer8,
+    Layer9,
 }
-impl Into<EvdevModMask> for &Layer{
+impl Into<EvdevModMask> for &Layer {
     fn into(self) -> EvdevModMask {
-        match self{
+        match self {
             Layer::AllLayer => LAYER_0,
             Layer::Layer0 => LAYER_0,
             Layer::Layer1 => LAYER_1,
@@ -37,12 +56,16 @@ impl Into<EvdevModMask> for &Layer{
             Layer::Layer3 => LAYER_3,
             Layer::Layer4 => LAYER_4,
             Layer::Layer5 => LAYER_5,
+            Layer::Layer6 => LAYER_6,
+            Layer::Layer7 => LAYER_7,
+            Layer::Layer8 => LAYER_8,
+            Layer::Layer9 => LAYER_9,
         }
     }
 }
-impl Into<EvdevModMask> for Layer{
+impl Into<EvdevModMask> for Layer {
     fn into(self) -> EvdevModMask {
-        match self{
+        match self {
             Layer::AllLayer => LAYER_0,
             Layer::Layer0 => LAYER_0,
             Layer::Layer1 => LAYER_1,
@@ -50,6 +73,10 @@ impl Into<EvdevModMask> for Layer{
             Layer::Layer3 => LAYER_3,
             Layer::Layer4 => LAYER_4,
             Layer::Layer5 => LAYER_5,
+            Layer::Layer6 => LAYER_6,
+            Layer::Layer7 => LAYER_7,
+            Layer::Layer8 => LAYER_8,
+            Layer::Layer9 => LAYER_9,
         }
     }
 }
@@ -135,6 +162,13 @@ impl PartialEq for EvdevModMask {
                     return false;
                 }
             }
+            8 | 128 => {
+                if other.0 == 34 || other.0 == 96 {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
             x => {
                 if x == other.0 {
                     return true;
@@ -179,87 +213,88 @@ impl fmt::Display for EvdevModMask {
 pub fn evdev_keycode_to_name(key_code: &EvdevKeyCode) -> String {
     //Colemak layout
     return match key_code.0 {
-        1 => "Esc",           
-        2 => "1",             
-        3 => "2",             
-        4 => "3",             
-        5 => "4",             
-        6 => "5",             
-        7 => "6",             
-        8 => "7",             
-        9 => "8",             
-        10 => "9",            
-        11 => "0",            
-        12 => "-",            
-        13 => "=",            
-        14 => "Backspace",    
-        15 => "tab",          
-        16 => "q",            
-        17 => "w",            
-        18 => "f",            
-        19 => "p",            
-        20 => "g",            
-        21 => "j",            
-        22 => "l",            
-        23 => "u",            
-        24 => "y",            
-        25 => "=",            
-        26 => "ç",            
-        27 => "]",            
-        28 => "cr",           
-        29 => "Ctrl",         
-        30 => "a",            
-        31 => "r",            
-        32 => "s",            
-        33 => "t",            
-        34 => "d",            
-        35 => "h",            
-        36 => "n",            
-        37 => "e",            
-        38 => "i",            
-        39 => "o",            
-        40 => "'",            
-        41 => "`",            
-        42 => "LFSH",        
-        43 => "¦",            
-        44 => "z",            
-        45 => "x",            
-        46 => "c",            
-        47 => "v",            
-        48 => "b",            
-        49 => "k",            
-        50 => "m",            
-        51 => ",",            
-        52 => ".",            
-        53 => "/",            
-        54 => "RTSH",        
-        56 => "Alt",          
-        57 => "Space",        
-        59 => "F1",           
-        60 => "F2",           
-        61 => "F3",           
-        62 => "F4",           
-        63 => "F5",           
-        64 => "F6",           
-        65 => "F7",           
-        66 => "F8",           
-        67 => "F9",           
-        68 => "F10",          
-        86 => "<",            
-        87 => "F11",          
-        88 => "F12",          
-        97 => "Ctrl",         
-        99 => "PrScn",        
-        100 => "AltGr",       
-        102 => "Home",        
-        103 => "Up",          
-        104 => "PgUp",        
-        107 => "End",         
-        109 => "PgDn",        
-        110 => "Ins",         
-        111 => "Del",         
-        125 => "Mod4",        
-        143 => "Fn",           
+        1 => "Esc",
+        2 => "1",
+        3 => "2",
+        4 => "3",
+        5 => "4",
+        6 => "5",
+        7 => "6",
+        8 => "7",
+        9 => "8",
+        10 => "9",
+        11 => "0",
+        12 => "-",
+        13 => "=",
+        14 => "Backspace",
+        15 => "tab",
+        16 => "q",
+        17 => "w",
+        18 => "f",
+        19 => "p",
+        20 => "g",
+        21 => "j",
+        22 => "l",
+        23 => "u",
+        24 => "y",
+        25 => "=",
+        26 => "ç",
+        27 => "]",
+        28 => "cr",
+        29 => "Ctrl",
+        30 => "a",
+        31 => "r",
+        32 => "s",
+        33 => "t",
+        34 => "d",
+        35 => "h",
+        36 => "n",
+        37 => "e",
+        38 => "i",
+        39 => "o",
+        40 => "'",
+        41 => "`",
+        42 => "LFSH",
+        43 => "¦",
+        44 => "z",
+        45 => "x",
+        46 => "c",
+        47 => "v",
+        48 => "b",
+        49 => "k",
+        50 => "m",
+        51 => ",",
+        52 => ".",
+        53 => "/",
+        54 => "RTSH",
+        56 => "Alt",
+        57 => "Space",
+        59 => "F1",
+        60 => "F2",
+        61 => "F3",
+        62 => "F4",
+        63 => "F5",
+        64 => "F6",
+        65 => "F7",
+        66 => "F8",
+        67 => "F9",
+        68 => "F10",
+        86 => "<",
+        87 => "F11",
+        88 => "F12",
+        97 => "Ctrl",
+        99 => "PrScn",
+        100 => "AltGr",
+        102 => "Home",
+        103 => "Up",
+        104 => "PgUp",
+        107 => "End",
+        109 => "PgDn",
+        110 => "Ins",
+        111 => "Del",
+        125 => "Mod4",
+        143 => "Fn",
         _ => "Unknown key",
-    }.to_string()
+    }
+    .to_string();
 }

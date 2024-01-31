@@ -92,6 +92,7 @@ impl KeystateMemory {
         };
         key_update_result
     }
+    // WARN: I think I set this at random doesn't match official bits
     fn mod_to_mod_mask(mod_key: &EvdevKeyCode) -> EvdevModMask {
         EvdevModMask::from(match *mod_key {
             KEY_LEFTALT => 1,

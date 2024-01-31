@@ -22,7 +22,7 @@ pub struct LayerTab<'a> {
 
 impl<'a> LayerTab<'a> {
     pub fn default() -> Self {
-        let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift"];
+        let layout_str = vec!["All", "Base", "Shift", "AltGr", "AltGr + Shift", "Alt"];
         Self {
             tab: TabManager::new(layout_str),
         }
@@ -72,7 +72,8 @@ impl<'a> LayerTab<'a> {
             2 => Layer::Layer1,
             3 => Layer::Layer2,
             4 => Layer::Layer3,
-            5 => Layer::Layer4,
+            5 => Layer::Layer8,
+            6 => Layer::Layer4,
             _ => unreachable!(),
         };
         let clicks_vec = if layer == Layer::AllLayer {
